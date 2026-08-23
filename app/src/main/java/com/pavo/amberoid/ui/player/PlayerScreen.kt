@@ -1,6 +1,5 @@
 package com.pavo.amberoid.ui.player
 
-import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,13 +30,11 @@ import com.pavo.amberoid.ui.components.SkipPrevious
 import com.pavo.amberoid.ui.components.TrackAlbum
 import com.pavo.amberoid.ui.components.TrackImage
 import com.pavo.amberoid.ui.components.TrackLength
-import com.pavo.amberoid.ui.components.TrackSeekBar
 import com.pavo.amberoid.ui.components.TrackTitle
 import com.pavo.amberoid.ui.components.VolumeBar
 import com.pavo.amberoid.ui.components.VolumeDown
 import com.pavo.amberoid.ui.components.VolumeUp
 import com.pavo.amberoid.ui.components.WaveformSeekBar
-import kotlinx.coroutines.flow.compose
 
 @Composable
 fun AmberoidUI(
