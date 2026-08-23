@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.pavo.amberoid.gradientBrush
 import com.pavo.amberoid.ui.components.ArtistName
 import com.pavo.amberoid.ui.components.PlayPause
 import com.pavo.amberoid.ui.components.PlayedTrackTime

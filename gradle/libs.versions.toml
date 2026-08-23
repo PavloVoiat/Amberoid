@@ -8,11 +8,11 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
 kotlin = "2.4.10"
-composeBom = "2026.06.01"
+composeBom = "2026.08.00"
 media3Exoplayer = "1.11.0"
 palette = "1.0.0"
-uiText = "1.11.4"
-runtime = "1.11.4"
+uiText = "1.12.0"
+runtime = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
