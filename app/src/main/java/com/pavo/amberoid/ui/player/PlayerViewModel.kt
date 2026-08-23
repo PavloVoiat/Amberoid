@@ -1,22 +1,31 @@
 package com.pavo.amberoid.ui.player
 
 import android.app.Application
+import android.content.Context
+import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.palette.graphics.Palette
 import com.pavo.amberoid.data.model.Song
 import com.pavo.amberoid.data.repository.AudioRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 class PlayerViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = AudioRepository(application)
@@ -60,7 +69,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             while (player.isPlaying) {
                 _currentPosition.value = player.currentPosition.coerceAtLeast(0L)
                 _duration.value = player.duration.coerceAtLeast(0L)
-                delay(500)
+                delay(500.milliseconds)
             }
         }
     }
@@ -103,7 +112,6 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     override fun onCleared() {
-        super.onCleared()
         player.release()
     }
 
@@ -113,7 +121,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         if (songList.isEmpty()) return
 
         val currentIndex = songList.indexOf(current)
-        val previousIndex = if (currentIndex  - 1 < 0) songList.size - 1 else currentIndex - 1
+        val previousIndex = if (currentIndex - 1 < 0) songList.size - 1 else currentIndex - 1
 
         selectSong(songList[previousIndex])
         player.play()
@@ -130,4 +138,70 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         selectSong(songList[nextIndex])
         player.play()
     }
+
+    val artworkBytes: StateFlow<ByteArray?> = _currentSong
+        .map { song ->
+            song?.let {
+                withContext(Dispatchers.IO) {
+                    getArtwork(getApplication(), it.contentUri)
+                }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+    fun getArtwork(context: Context, uri: Uri): ByteArray? {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(context, uri)
+            retriever.embeddedPicture
+        } catch (e: Exception) {
+            null
+        } finally {
+            retriever.release()
+        }
+    }
+
+    private suspend fun extractColorsFromArtwork(bytes: ByteArray?): Pair<Color, Color> {
+        if (bytes == null) {
+            return Pair(Color(0xFF1E1E2C), Color(0xFF0F0F1A))
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                if (bitmap != null) {
+                    val palette = Palette.from(bitmap).generate()
+
+                    val dominantSwatch = palette.vibrantSwatch
+                        ?: palette.dominantSwatch
+                        ?: palette.mutedSwatch
+
+                    val darkSwatch = palette.darkVibrantSwatch
+                        ?: palette.darkMutedSwatch
+                        ?: palette.dominantSwatch
+
+                    val topColor = dominantSwatch?.rgb?.let { Color(it) } ?: Color(0xFF1E1E2C)
+                    val bottomColor = darkSwatch?.rgb?.let { Color(it) } ?: Color(0xFF0F0F1A)
+
+                    Pair(topColor, bottomColor)
+                } else {
+                    Pair(Color(0xFF1E1E2C), Color(0xFF0F0F1A))
+                }
+            } catch (e: Exception) {
+                Pair(Color(0xFF1E1E2C), Color(0xFF0F0F1A))
+            }
+        }
+    }
+
+    val backgroundColorScheme: StateFlow<Pair<Color, Color>> = artworkBytes
+        .map { bytes -> extractColorsFromArtwork(bytes) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = Pair(Color(0xFF1E1E2C), Color(0xFF0F0F1A))
+        )
 }

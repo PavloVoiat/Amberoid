@@ -1,7 +1,10 @@
 package com.pavo.amberoid.ui.player
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +18,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pavo.amberoid.gradientBrush
 import com.pavo.amberoid.ui.components.ArtistName
@@ -44,99 +49,125 @@ fun AmberoidUI(
     val currentSong by viewModel.currentSong.collectAsState()
     val currentPosition by viewModel.currentPosition.collectAsState()
     val duration by viewModel.duration.collectAsState()
+    val artworkBytes by viewModel.artworkBytes.collectAsStateWithLifecycle()
+    val colorScheme by viewModel.backgroundColorScheme.collectAsStateWithLifecycle()
+    val topColor = colorScheme.first
+    val bottomColor = colorScheme.second
+    val animatedTopColor by animateColorAsState(
+        targetValue = topColor,
+        animationSpec = tween(800),
+        label = "TopColorAnimation"
+    )
+    val animatedBottomColor by animateColorAsState(
+        targetValue = bottomColor,
+        animationSpec = tween(800),
+        label = "BottomColorAnimation"
+    )
 
     val progressFraction = if (duration > 0) currentPosition.toFloat() / duration.toFloat() else 0f
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = gradientBrush)
-            .padding(top = 40.dp, bottom = 25.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        animatedTopColor,
+                        animatedBottomColor
+                    )
+                )
+            )
     ) {
-        TrackImage()
-
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-
-        TrackTitle(title = currentSong?.title ?: "No Track")
-
-        ArtistName(artist = currentSong?.artist ?: "Unknown Artist")
-
-        TrackAlbum()
-
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-
-        WaveformSeekBar(
-            progressFraction = progressFraction,
-            songId = currentSong?.id ?: 0L,
-            onSeek = { fraction ->
-                val targetMs = (fraction * duration).toLong()
-                viewModel.seekTo(targetMs)
-            },
-            modifier = Modifier.padding(horizontal = 30.dp)
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Row(
-            modifier = Modifier.size(300.dp, 17.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 40.dp, bottom = 25.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            PlayedTrackTime(positionMs = currentPosition)
-
-            TrackLength(positionMs = currentPosition, durationMs = duration)
-        }
+            TrackImage(artworkBytes = artworkBytes)
 
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
 
-        Row(
-            modifier = Modifier.size(300.dp, 25.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            VolumeDown()
+            TrackTitle(title = currentSong?.title ?: "No Track")
 
-            VolumeBar()
+            ArtistName(artist = currentSong?.artist ?: "Unknown Artist")
 
-            VolumeUp()
-        }
+            TrackAlbum()
 
-        Row(
-            modifier = Modifier.size(250.dp, 100.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SkipPrevious(onPreviousClick = { viewModel.playPrevious() })
 
-            PlayPause(
-                isPlaying = isPlaying,
-                onPlayToggle = { viewModel.togglePlayPause() }
+            Spacer(modifier = Modifier.height(50.dp))
+
+
+            WaveformSeekBar(
+                progressFraction = progressFraction,
+                songId = currentSong?.id ?: 0L,
+                onSeek = { fraction ->
+                    val targetMs = (fraction * duration).toLong()
+                    viewModel.seekTo(targetMs)
+                },
+                modifier = Modifier.padding(horizontal = 30.dp)
             )
 
-            SkipNext(onNextClick = { viewModel.playNext() })
-        }
+            Spacer(modifier = Modifier.height(10.dp))
 
-        Row(
-            modifier = Modifier.size(300.dp, 35.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            PlaylistButton()
+            Row(
+                modifier = Modifier.size(300.dp, 17.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                PlayedTrackTime(positionMs = currentPosition)
 
-            ShufflePlaylistButton()
+                TrackLength(positionMs = currentPosition, durationMs = duration)
+            }
 
-            Spacer(modifier = Modifier.width(100.dp))
 
-            RepeatPlaylistButton()
+            Spacer(modifier = Modifier.height(20.dp))
 
-            SettingsButton()
+
+            Row(
+                modifier = Modifier.size(300.dp, 25.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                VolumeDown()
+
+                VolumeBar()
+
+                VolumeUp()
+            }
+
+            Row(
+                modifier = Modifier.size(250.dp, 100.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SkipPrevious(onPreviousClick = { viewModel.playPrevious() })
+
+                PlayPause(
+                    isPlaying = isPlaying,
+                    onPlayToggle = { viewModel.togglePlayPause() }
+                )
+
+                SkipNext(onNextClick = { viewModel.playNext() })
+            }
+
+            Row(
+                modifier = Modifier.size(300.dp, 35.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PlaylistButton()
+
+                ShufflePlaylistButton()
+
+                Spacer(modifier = Modifier.width(100.dp))
+
+                RepeatPlaylistButton()
+
+                SettingsButton()
+            }
         }
     }
 }

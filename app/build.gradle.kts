@@ -54,6 +54,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
-    implementation("androidx.media3:media3-exoplayer:1.10.1")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.palette)
 }
