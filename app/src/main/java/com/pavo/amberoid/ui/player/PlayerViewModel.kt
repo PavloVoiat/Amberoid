@@ -203,4 +203,50 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = Pair(Color(0xFF1E1E2C), Color(0xFF0F0F1A))
         )
+
+    //Extracting Full Color Palette from Cover
+    
+    data class CoverPalette(
+        val primary: Color,
+        val secondary: Color,
+        val backgroundTop: Color,
+        val backgroundBottom: Color,
+        val surface: Color,
+        val textPrimary: Color,
+        val textSecondary: Color,
+        val accent: Color,
+        val allSwatches: List<Color>
+    )
+
+    private suspend fun extractFullPalette(bytes: ByteArray?): CoverPalette {
+        val defaultPrimary = Color.TODO()
+        val defaultBackgroundTop = Color(0xFF1E1E2C)
+        val defaultBackgroundBottom = efaultBackgroundp = Color(0xFF0F0F1A)
+
+        if (bytes == null) {
+            return CoverPalette(
+                primary = defaultPrimary,
+                secondary = Color.Black,
+                backgroundTop = defaultBackgroundTop,
+                backgroundBottom = defaultBackgroundBottom,
+                surface = Color.TODO(),
+                textPrimary = Color.White,
+                textSecondary = Color.LightGray,
+                allSwatches = emptyList()
+            )
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                    ?: return@withContext extractFullPalette(null)
+
+                val palette = Palette.from(bitmap)
+                    .maximumColorCount(32)
+                    .generate()
+
+                TODO()
+            }
+        }
+    }
 }
