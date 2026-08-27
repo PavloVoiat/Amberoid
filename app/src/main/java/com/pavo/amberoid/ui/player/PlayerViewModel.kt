@@ -8,6 +8,7 @@ import android.net.Uri
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.ColorInfo
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -164,48 +166,6 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    private suspend fun extractColorsFromArtwork(bytes: ByteArray?): Pair<Color, Color> {
-        if (bytes == null) {
-            return Pair(Color(0xFF1E1E2C), Color(0xFF0F0F1A))
-        }
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                if (bitmap != null) {
-                    val palette = Palette.from(bitmap).generate()
-
-                    val dominantSwatch = palette.vibrantSwatch
-                        ?: palette.dominantSwatch
-                        ?: palette.mutedSwatch
-
-                    val darkSwatch = palette.darkVibrantSwatch
-                        ?: palette.darkMutedSwatch
-                        ?: palette.dominantSwatch
-
-                    val topColor = dominantSwatch?.rgb?.let { Color(it) } ?: Color(0xFF1E1E2C)
-                    val bottomColor = darkSwatch?.rgb?.let { Color(it) } ?: Color(0xFF0F0F1A)
-
-                    Pair(topColor, bottomColor)
-                } else {
-                    Pair(Color(0xFF1E1E2C), Color(0xFF0F0F1A))
-                }
-            } catch (e: Exception) {
-                Pair(Color(0xFF1E1E2C), Color(0xFF0F0F1A))
-            }
-        }
-    }
-
-    val backgroundColorScheme: StateFlow<Pair<Color, Color>> = artworkBytes
-        .map { bytes -> extractColorsFromArtwork(bytes) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = Pair(Color(0xFF1E1E2C), Color(0xFF0F0F1A))
-        )
-
-    //Extracting Full Color Palette from Cover
-    
     data class CoverPalette(
         val primary: Color,
         val secondary: Color,
@@ -219,19 +179,20 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     )
 
     private suspend fun extractFullPalette(bytes: ByteArray?): CoverPalette {
-        val defaultPrimary = Color.TODO()
+        val defaultPrimary = Color(0xFFBB86FC)
         val defaultBackgroundTop = Color(0xFF1E1E2C)
-        val defaultBackgroundBottom = efaultBackgroundp = Color(0xFF0F0F1A)
+        val defaultBackgroundBottom = Color(0xFF0F0F1A)
 
         if (bytes == null) {
             return CoverPalette(
                 primary = defaultPrimary,
-                secondary = Color.Black,
+                secondary = Color(0xFF03DAC6),
                 backgroundTop = defaultBackgroundTop,
                 backgroundBottom = defaultBackgroundBottom,
-                surface = Color.TODO(),
+                surface = Color(0xFF2D2D3F),
                 textPrimary = Color.White,
                 textSecondary = Color.LightGray,
+                accent = defaultPrimary,
                 allSwatches = emptyList()
             )
         }
@@ -245,8 +206,64 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     .maximumColorCount(32)
                     .generate()
 
-                TODO()
+                val vibrant = palette.vibrantSwatch
+                val darkVibrant = palette.darkVibrantSwatch
+                val lightVibrant = palette.lightVibrantSwatch
+                val muted = palette.mutedSwatch
+                val darkMuted = palette.darkMutedSwatch
+                val dominant = palette.dominantSwatch
+
+                val primaryColor = vibrant?.rgb?.let { Color(it) }
+                    ?: dominant?.rgb?.let { Color(it) }
+                    ?: defaultPrimary
+
+                val backgroundTop = darkVibrant?.rgb?.let { Color(it) }
+                    ?: darkMuted?.rgb?.let { Color(it) }
+                    ?: defaultBackgroundTop
+
+                val backgroundBottom = dominant?.rgb?.let { Color(it) }
+                    ?: defaultBackgroundBottom
+
+                val bodyTextColor = dominant?.bodyTextColor?.let { Color(it) } ?: Color.White
+                val titleTextColor = dominant?.titleTextColor?.let { Color(it) } ?: Color.White
+
+                val extractedSwatches = palette.swatches
+                    .sortedByDescending { it.population }
+                    .take(10)
+                    .map { Color(it.rgb) }
+
+                CoverPalette(
+                    primary = primaryColor,
+                    secondary = lightVibrant?.rgb?.let { Color(it) } ?: primaryColor,
+                    backgroundTop = backgroundTop,
+                    backgroundBottom = backgroundBottom,
+                    surface = darkMuted?.rgb?.let { Color(it) } ?: Color(0xFF252535),
+                    textPrimary = titleTextColor,
+                    textSecondary = bodyTextColor,
+                    accent = muted?.rgb?.let { Color(it) } ?: primaryColor,
+                    allSwatches = extractedSwatches
+                )
+            } catch (e: Exception) {
+                extractFullPalette(null)
             }
         }
     }
+
+    val colorScheme: StateFlow<CoverPalette> = artworkBytes
+        .mapLatest { bytes -> extractFullPalette(bytes) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = CoverPalette(
+                primary = Color(0xFFBB86FC),
+                secondary = Color(0xFF03DAC6),
+                backgroundTop = Color(0xFF1E1E2C),
+                backgroundBottom = Color(0xFF0F0F1A),
+                surface = Color(0xFF2D2D3F),
+                textPrimary = Color.White,
+                textSecondary = Color.LightGray,
+                accent = Color(0xFFBB86FC),
+                allSwatches = emptyList()
+            )
+        )
 }

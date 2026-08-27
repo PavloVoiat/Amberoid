@@ -49,9 +49,9 @@ fun AmberoidUI(
     val currentPosition by viewModel.currentPosition.collectAsState()
     val duration by viewModel.duration.collectAsState()
     val artworkBytes by viewModel.artworkBytes.collectAsStateWithLifecycle()
-    val colorScheme by viewModel.backgroundColorScheme.collectAsStateWithLifecycle()
-    val topColor = colorScheme.first
-    val bottomColor = colorScheme.second
+    val colorScheme by viewModel.colorScheme.collectAsStateWithLifecycle()
+    val topColor = colorScheme.backgroundTop
+    val bottomColor = colorScheme.backgroundBottom
     val animatedTopColor by animateColorAsState(
         targetValue = topColor,
         animationSpec = tween(800),
