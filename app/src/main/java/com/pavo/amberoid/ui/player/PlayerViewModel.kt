@@ -8,7 +8,6 @@ import android.net.Uri
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.ColorInfo
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -16,6 +15,7 @@ import androidx.palette.graphics.Palette
 import com.pavo.amberoid.data.model.Song
 import com.pavo.amberoid.data.repository.AudioRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -248,7 +248,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             }
         }
     }
-
+    @OptIn(ExperimentalCoroutinesApi::class)
     val colorScheme: StateFlow<CoverPalette> = artworkBytes
         .mapLatest { bytes -> extractFullPalette(bytes) }
         .stateIn(
