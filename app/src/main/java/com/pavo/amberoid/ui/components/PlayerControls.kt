@@ -12,6 +12,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.pavo.amberoid.NerdFont
+import com.pavo.amberoid.ui.player.primaryButtonColor
+import com.pavo.amberoid.ui.player.secondaryButtonColor
 
 @Composable
 fun SkipPrevious(

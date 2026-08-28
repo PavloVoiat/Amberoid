@@ -52,6 +52,9 @@ fun AmberoidUI(
     val colorScheme by viewModel.colorScheme.collectAsStateWithLifecycle()
     val topColor = colorScheme.backgroundTop
     val bottomColor = colorScheme.backgroundBottom
+    val primaryButtonColor = colorScheme.primary
+    val secondaryButtonColor = colorScheme.secondary 
+
     val animatedTopColor by animateColorAsState(
         targetValue = topColor,
         animationSpec = tween(800),
