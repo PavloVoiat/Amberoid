@@ -13,12 +13,12 @@ import androidx.compose.ui.unit.dp
 import com.pavo.amberoid.NerdFont
 
 @Composable
-fun VolumeDown() {
+fun VolumeDown(color: Color) {
     Box(
         modifier = Modifier
             .size(25.dp)
             .background(
-                color = Color(0xFF7C80B5),
+                color = color,
                 shape = RoundedCornerShape(50)
             ),
         contentAlignment = Alignment.Center
@@ -33,12 +33,12 @@ fun VolumeDown() {
 }
 
 @Composable
-fun VolumeUp() {
+fun VolumeUp(color: Color) {
     Box(
         modifier = Modifier
             .size(25.dp)
             .background(
-                color = Color(0xFF7C80B5),
+                color = color,
                 shape = RoundedCornerShape(50)
             ),
         contentAlignment = Alignment.Center
@@ -53,12 +53,12 @@ fun VolumeUp() {
 }
 
 @Composable
-fun VolumeBar() {
+fun VolumeBar(color: Color) {
     Box(
         modifier = Modifier
             .size(200.dp, 15.dp)
             .background(
-                color = Color(0xFF5272AD),
+                color = color,
                 shape = RoundedCornerShape(50)
             )
     )

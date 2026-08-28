@@ -133,11 +133,11 @@ fun AmberoidUI(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                VolumeDown()
+                VolumeDown(color = primaryButtonColor)
 
-                VolumeBar()
+                VolumeBar(color = secondaryButtonColor)
 
-                VolumeUp()
+                VolumeUp(color = primaryButtonColor)
             }
 
             Row(
@@ -157,7 +157,7 @@ fun AmberoidUI(
                 )
 
                 SkipNext(
-                    onNextClick = { viewModel.playNext() },isPlaying
+                    onNextClick = { viewModel.playNext() },
                     color = secondaryButtonColor
                 )
             }
@@ -167,15 +167,15 @@ fun AmberoidUI(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PlaylistButton()
+                PlaylistButton(color = TODO())
 
-                ShufflePlaylistButton()
+                ShufflePlaylistButton(color = TODO())
 
                 Spacer(modifier = Modifier.width(100.dp))
 
-                RepeatPlaylistButton()
+                RepeatPlaylistButton(color = TODO())
 
-                SettingsButton()
+                SettingsButton(color = TODO())
             }
         }
     }
