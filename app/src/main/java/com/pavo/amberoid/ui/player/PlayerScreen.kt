@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -53,7 +54,7 @@ fun AmberoidUI(
     val topColor = colorScheme.backgroundTop
     val bottomColor = colorScheme.backgroundBottom
     val primaryButtonColor = colorScheme.primary
-    val secondaryButtonColor = colorScheme.secondary 
+    val secondaryButtonColor = colorScheme.secondary
 
     val animatedTopColor by animateColorAsState(
         targetValue = topColor,
@@ -167,15 +168,129 @@ fun AmberoidUI(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PlaylistButton(color = TODO())
+                PlaylistButton(color = colorScheme.accent)
 
-                ShufflePlaylistButton(color = TODO())
+                ShufflePlaylistButton(color = colorScheme.accent)
 
                 Spacer(modifier = Modifier.width(100.dp))
 
-                RepeatPlaylistButton(color = TODO())
+                RepeatPlaylistButton(color = colorScheme.accent)
 
-                SettingsButton(color = TODO())
+                SettingsButton(color = colorScheme.accent)
+            }
+
+            Row(
+                modifier = Modifier.size(300.dp, 50.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.primary)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.secondary)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.backgroundTop)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.backgroundBottom)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.surface)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.textPrimary)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.textSecondary)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.accent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(0) ?: Color.Transparent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(1) ?: Color.Transparent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(2) ?: Color.Transparent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(3) ?: Color.Transparent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(4) ?: Color.Transparent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(5) ?: Color.Transparent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(6) ?: Color.Transparent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(7) ?: Color.Transparent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(8) ?: Color.Transparent)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .background(color = colorScheme.allSwatches.getOrNull(9) ?: Color.Transparent)
+                )
             }
         }
     }

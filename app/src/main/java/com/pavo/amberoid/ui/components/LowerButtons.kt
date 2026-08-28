@@ -13,12 +13,12 @@ import androidx.compose.ui.unit.dp
 import com.pavo.amberoid.NerdFont
 
 @Composable
-fun PlaylistButton() {
+fun PlaylistButton(color: Color) {
     Box(
         modifier = Modifier
             .size(35.dp)
             .background(
-                color = Color(0xFF5D5A94),
+                color = color,
                 shape = RoundedCornerShape(50)
             ),
         contentAlignment = Alignment.Center
@@ -33,12 +33,12 @@ fun PlaylistButton() {
 }
 
 @Composable
-fun ShufflePlaylistButton() {
+fun ShufflePlaylistButton(color: Color) {
     Box(
         modifier = Modifier
             .size(35.dp)
             .background(
-                color = Color(0xFF5D5A94),
+                color = color,
                 shape = RoundedCornerShape(50)
             ),
         contentAlignment = Alignment.Center
@@ -53,12 +53,12 @@ fun ShufflePlaylistButton() {
 }
 
 @Composable
-fun RepeatPlaylistButton() {
+fun RepeatPlaylistButton(color: Color) {
     Box(
         modifier = Modifier
             .size(35.dp)
             .background(
-                color = Color(0xFF5D5A94),
+                color = color,
                 shape = RoundedCornerShape(50)
             ),
         contentAlignment = Alignment.Center
@@ -73,12 +73,12 @@ fun RepeatPlaylistButton() {
 }
 
 @Composable
-fun SettingsButton() {
+fun SettingsButton(color: Color) {
     Box(
         modifier = Modifier
             .size(35.dp)
             .background(
-                color = Color(0xFF5D5A94),
+                color = color,
                 shape = RoundedCornerShape(50)
             ),
         contentAlignment = Alignment.Center
