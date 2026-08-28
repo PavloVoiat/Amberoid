@@ -12,18 +12,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.pavo.amberoid.NerdFont
-import com.pavo.amberoid.ui.player.primaryButtonColor
-import com.pavo.amberoid.ui.player.secondaryButtonColor
 
 @Composable
 fun SkipPrevious(
-    onPreviousClick: () -> Unit
+    onPreviousClick: () -> Unit,
+    color: Color
 ) {
     IconButton(
         modifier = Modifier
             .size(50.dp)
             .background(
-                color = Color(0xFF7C80B5),
+                color = color,
                 shape = RoundedCornerShape(25.dp)
             ),
         onClick = onPreviousClick
@@ -40,13 +39,14 @@ fun SkipPrevious(
 
 @Composable
 fun SkipNext(
-    onNextClick: () -> Unit
+    onNextClick: () -> Unit,
+    color: Color
 ) {
     IconButton(
         modifier = Modifier
             .size(50.dp)
             .background(
-                color = Color(0xFF7C80B5),
+                color = color,
                 shape = RoundedCornerShape(25.dp)
             ),
         onClick = onNextClick
@@ -65,12 +65,13 @@ fun SkipNext(
 fun PlayPause(
     isPlaying: Boolean,
     onPlayToggle: () -> Unit,
+    color: Color
 ) {
     IconButton(
         modifier = Modifier
             .size(75.dp)
             .background(
-                color = Color(0xFF5272AD),
+                color = color,
                 shape = RoundedCornerShape(50)
             ),
         onClick = onPlayToggle

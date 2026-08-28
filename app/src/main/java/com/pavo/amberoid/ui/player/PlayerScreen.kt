@@ -145,14 +145,21 @@ fun AmberoidUI(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SkipPrevious(onPreviousClick = { viewModel.playPrevious() })
+                SkipPrevious(
+                    onPreviousClick = { viewModel.playPrevious() },
+                    color = secondaryButtonColor
+                )
 
                 PlayPause(
                     isPlaying = isPlaying,
-                    onPlayToggle = { viewModel.togglePlayPause() }
+                    onPlayToggle = { viewModel.togglePlayPause() },
+                    color = primaryButtonColor
                 )
 
-                SkipNext(onNextClick = { viewModel.playNext() })
+                SkipNext(
+                    onNextClick = { viewModel.playNext() },isPlaying
+                    color = secondaryButtonColor
+                )
             }
 
             Row(
