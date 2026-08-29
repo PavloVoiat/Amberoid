@@ -6,15 +6,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -22,13 +17,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pavo.amberoid.ui.player.AmberoidUI
 import com.pavo.amberoid.ui.player.PlayerViewModel
 import com.pavo.amberoid.ui.theme.AmberoidTheme
-
-val gradientBrush = Brush.linearGradient(
-    colors = listOf(
-        Color(0xFF7477A3),
-        Color(0xFF160E7B)
-    )
-)
 
 val NerdFont: FontFamily = FontFamily(Font(R.font.symbols_nerd_font_regular))
 
@@ -43,7 +31,7 @@ class MainActivity : ComponentActivity() {
         windowInsetController.hide(WindowInsetsCompat.Type.systemBars())
 
         setContent {
-            AmberoidTheme() {
+            AmberoidTheme {
                 val viewModel: PlayerViewModel = viewModel()
                 val context = androidx.compose.ui.platform.LocalContext.current
 
@@ -77,10 +65,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun CounterAppPreview() {
-    AmberoidUI()
 }

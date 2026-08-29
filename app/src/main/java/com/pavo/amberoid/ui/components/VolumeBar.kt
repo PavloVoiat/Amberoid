@@ -1,9 +1,13 @@
 package com.pavo.amberoid.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,14 +17,18 @@ import androidx.compose.ui.unit.dp
 import com.pavo.amberoid.NerdFont
 
 @Composable
-fun VolumeDown(color: Color) {
+fun VolumeDown(
+    color: Color,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .size(25.dp)
             .background(
                 color = color,
                 shape = RoundedCornerShape(50)
-            ),
+            )
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -33,14 +41,18 @@ fun VolumeDown(color: Color) {
 }
 
 @Composable
-fun VolumeUp(color: Color) {
+fun VolumeUp(
+    color: Color,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .size(25.dp)
             .background(
                 color = color,
                 shape = RoundedCornerShape(50)
-            ),
+            )
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -53,13 +65,20 @@ fun VolumeUp(color: Color) {
 }
 
 @Composable
-fun VolumeBar(color: Color) {
-    Box(
-        modifier = Modifier
-            .size(200.dp, 15.dp)
-            .background(
-                color = color,
-                shape = RoundedCornerShape(50)
-            )
+fun VolumeBar(
+    color: Color,
+    volume: Float,
+    onVolumeChange: (Float) -> Unit
+) {
+    Slider(
+        value = volume,
+        onValueChange = onVolumeChange,
+        valueRange = 0f..1f,
+        colors = SliderDefaults.colors(
+            thumbColor = color,
+            activeTrackColor = color,
+            inactiveTrackColor = color.copy(alpha = 0.3f)
+        ),
+        modifier = Modifier.width(200.dp)
     )
 }

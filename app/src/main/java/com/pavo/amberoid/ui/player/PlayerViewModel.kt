@@ -1,8 +1,12 @@
 package com.pavo.amberoid.ui.player
 
 import android.app.Application
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.BitmapFactory
+import android.media.AudioManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.compose.ui.graphics.Color
@@ -48,6 +52,22 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private val _duration = MutableStateFlow(0L)
     val duration: StateFlow<Long> = _duration.asStateFlow()
 
+    private val audioManager = getApplication<Application>()
+        .getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+    private val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+
+    private val _volume = MutableStateFlow(getCurrentVolumeRatio())
+    val volume: StateFlow<Float> = _volume.asStateFlow()
+
+    private val volumeReceiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "android.media.VOLUME_CHANGED_ACTION") {
+                _volume.value = getCurrentVolumeRatio()
+            }
+        }
+    }
+
     init {
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -63,6 +83,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 }
             }
         })
+
+        val filter = IntentFilter("android.media.VOLUME_CHANGED_ACTION")
+        getApplication<Application>().registerReceiver(volumeReceiver, filter)
     }
 
     private fun startProgressUpdate() {
@@ -114,6 +137,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     override fun onCleared() {
         player.release()
+        try {
+            getApplication<Application>().unregisterReceiver(volumeReceiver)
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        }
     }
 
     fun playPrevious() {
@@ -266,4 +294,24 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 allSwatches = emptyList()
             )
         )
+
+    private fun getCurrentVolumeRatio(): Float {
+        val current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        return if (maxVolume > 0) current.toFloat() / maxVolume else 0f
+    }
+
+    fun setVolume(newVolumeRatio: Float) {
+        val clampedRatio = newVolumeRatio.coerceIn(0f, 1f)
+        _volume.value = clampedRatio
+        val targetVolume = (clampedRatio * maxVolume).toInt()
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, targetVolume, 0)
+    }
+
+    fun increaseVolume(step: Float = 0.1f) {
+        setVolume(_volume.value + step)
+    }
+
+    fun decreaseVolume(step: Float = 0.1f) {
+        setVolume(_volume.value - step)
+    }
 }

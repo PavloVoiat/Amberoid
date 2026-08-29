@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -55,6 +54,7 @@ fun AmberoidUI(
     val bottomColor = colorScheme.backgroundBottom
     val primaryButtonColor = colorScheme.textPrimary
     val secondaryButtonColor = colorScheme.textSecondary
+    val volume by viewModel.volume.collectAsStateWithLifecycle()
 
     val animatedTopColor by animateColorAsState(
         targetValue = topColor,
@@ -134,11 +134,21 @@ fun AmberoidUI(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                VolumeDown(color = primaryButtonColor)
+                VolumeDown(
+                    color = primaryButtonColor,
+                    onClick = { viewModel.decreaseVolume() }
+                )
 
-                VolumeBar(color = secondaryButtonColor)
+                VolumeBar(
+                    color = secondaryButtonColor,
+                    onVolumeChange = { newVolume -> viewModel.setVolume(newVolume) },
+                    volume = volume
+                )
 
-                VolumeUp(color = primaryButtonColor)
+                VolumeUp(
+                    color = primaryButtonColor,
+                    onClick = { viewModel.increaseVolume() }
+                )
             }
 
             Row(
@@ -168,15 +178,15 @@ fun AmberoidUI(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PlaylistButton(color = colorScheme.accent)
+                PlaylistButton(color = secondaryButtonColor)
 
-                ShufflePlaylistButton(color = colorScheme.accent)
+                ShufflePlaylistButton(color = secondaryButtonColor)
 
                 Spacer(modifier = Modifier.width(100.dp))
 
-                RepeatPlaylistButton(color = colorScheme.accent)
+                RepeatPlaylistButton(color = secondaryButtonColor)
 
-                SettingsButton(color = colorScheme.accent)
+                SettingsButton(color = secondaryButtonColor)
             }
         }
     }
