@@ -314,4 +314,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     fun decreaseVolume(step: Float = 0.1f) {
         setVolume(_volume.value - step)
     }
+
+    fun shuffle() {
+	TODO()
+	//_songs.value = player.shuffle(songs)
+    }
+
+    fun repeat() {
+	TODO()
+    }
 }
