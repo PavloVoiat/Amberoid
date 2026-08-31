@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,7 +17,7 @@ import com.pavo.amberoid.NerdFont
 fun PlaylistButton(color: Color) {
     Box(
         modifier = Modifier
-            .size(35.dp)
+            .size(48.dp)
             .background(
                 color = color,
                 shape = RoundedCornerShape(50)
@@ -35,22 +36,22 @@ fun PlaylistButton(color: Color) {
 @Composable
 fun ShufflePlaylistButton(
     color: Color,
-    onShuffle: () -> Unit
+    onShuffle: () -> Unit,
+    isShuffleEnabled: Boolean
 ) {
-    Box(
+    IconButton(
         modifier = Modifier
-            .size(35.dp)
             .background(
-                color = color,
+                color = if (!isShuffleEnabled) color else color.copy(0.3f),
                 shape = RoundedCornerShape(50)
             ),
-        contentAlignment = Alignment.Center
+        onClick = onShuffle
     ) {
         Text(
             text = "\uDB81\uDC9F",
 
             color = Color.White,
-            fontFamily = NerdFont
+            fontFamily = NerdFont,
         )
     }
 }
@@ -58,22 +59,32 @@ fun ShufflePlaylistButton(
 @Composable
 fun RepeatPlaylistButton(
     color: Color,
-    onRepeat: () -> Unit
+    onRepeat: () -> Unit,
+    repeatMode: Int
 ) {
-    Box(
+    IconButton(
         modifier = Modifier
-            .size(35.dp)
             .background(
                 color = color,
                 shape = RoundedCornerShape(50)
-            ),
-        contentAlignment = Alignment.Center
+                    ),
+        onClick = onRepeat
     ) {
         Text(
-            text = "\uDB81\uDD47",
+            text = when (repeatMode) {
+                2 -> {
+                    "\uDB81\uDC56"
+                }
+                1 -> {
+                    "\uDB81\uDC58"
+                }
+                else -> {
+                    "\uF061"
+                }
+            },
 
             color = Color.White,
-            fontFamily = NerdFont
+            fontFamily = NerdFont,
         )
     }
 }
@@ -82,7 +93,7 @@ fun RepeatPlaylistButton(
 fun SettingsButton(color: Color) {
     Box(
         modifier = Modifier
-            .size(35.dp)
+            .size(48.dp)
             .background(
                 color = color,
                 shape = RoundedCornerShape(50)

@@ -55,6 +55,8 @@ fun AmberoidUI(
     val primaryButtonColor = colorScheme.textPrimary
     val secondaryButtonColor = colorScheme.textSecondary
     val volume by viewModel.volume.collectAsStateWithLifecycle()
+    val isShuffleEnabled by viewModel.isShuffleEnabled.collectAsStateWithLifecycle()
+    val repeatMode by viewModel.repeatMode.collectAsStateWithLifecycle()
 
     val animatedTopColor by animateColorAsState(
         targetValue = topColor,
@@ -174,23 +176,25 @@ fun AmberoidUI(
             }
 
             Row(
-                modifier = Modifier.size(300.dp, 35.dp),
+                modifier = Modifier.size(300.dp, 48.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 PlaylistButton(color = secondaryButtonColor)
 
                 ShufflePlaylistButton(
-		    color = secondaryButtonColor,
-		    onShuffle = viewModel.shuffle()
-		)
+		            color = secondaryButtonColor,
+		            onShuffle = { viewModel.toggleShuffle() },
+                    isShuffleEnabled = isShuffleEnabled
+		        )
 
                 Spacer(modifier = Modifier.width(100.dp))
 
                 RepeatPlaylistButton(
-		    color = secondaryButtonColor,
-		    onRepeat = viewModel.repeat()
-		)
+		            color = secondaryButtonColor,
+		            onRepeat = { viewModel.toggleRepeatMode() },
+                    repeatMode = repeatMode
+		        )
 
                 SettingsButton(color = secondaryButtonColor)
             }

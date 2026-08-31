@@ -82,6 +82,16 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     _duration.value = player.duration.coerceAtLeast(0L)
                 }
             }
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                super.onMediaItemTransition(mediaItem, reason)
+                val newIndex = player.currentMediaItemIndex
+                val songList = _songs.value
+
+                if (newIndex in songList.indices) {
+                    _currentSong.value = songList[newIndex]
+                }
+            }
         })
 
         val filter = IntentFilter("android.media.VOLUME_CHANGED_ACTION")
@@ -117,9 +127,19 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     fun selectSong(song: Song) {
         _currentSong.value = song
-        val mediaItem = MediaItem.fromUri(song.contentUri)
-        player.setMediaItem(mediaItem)
-        player.prepare()
+        val allSongs = _songs.value
+        val index = allSongs.indexOf(song)
+
+        if (index != -1) {
+            if (player.mediaItemCount == 0) {
+                val mediaItems = allSongs.map { MediaItem.fromUri(it.contentUri) }
+                player.setMediaItems(mediaItems)
+                player.prepare()
+            }
+
+            player.seekTo(index, 0L)
+            player.prepare()
+        }
     }
 
     fun togglePlayPause() {
@@ -145,27 +165,15 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun playPrevious() {
-        val songList = _songs.value
-        val current = _currentSong.value ?: return
-        if (songList.isEmpty()) return
-
-        val currentIndex = songList.indexOf(current)
-        val previousIndex = if (currentIndex - 1 < 0) songList.size - 1 else currentIndex - 1
-
-        selectSong(songList[previousIndex])
-        player.play()
+        if (player.hasPreviousMediaItem()) {
+            player.seekToPreviousMediaItem()
+        }
     }
 
     fun playNext() {
-        val songList = _songs.value
-        val current = _currentSong.value ?: return
-        if (songList.isEmpty()) return
-
-        val currentIndex = songList.indexOf(current)
-        val nextIndex = (currentIndex + 1) % songList.size
-
-        selectSong(songList[nextIndex])
-        player.play()
+        if (player.hasNextMediaItem()) {
+            player.seekToNextMediaItem()
+        }
     }
 
     val artworkBytes: StateFlow<ByteArray?> = _currentSong
@@ -315,12 +323,25 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         setVolume(_volume.value - step)
     }
 
-    fun shuffle() {
-	TODO()
-	//_songs.value = player.shuffle(songs)
+    fun toggleShuffle() {
+        val newState = !player.shuffleModeEnabled
+        player.shuffleModeEnabled = newState
+        _isShuffleEnabled.value = newState
     }
 
-    fun repeat() {
-	TODO()
+    fun toggleRepeatMode() {
+	    val nextMode = when (player.repeatMode) {
+            Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
+            Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
+            else -> Player.REPEAT_MODE_OFF
+        }
+        player.repeatMode = nextMode
+        _repeatMode.value = nextMode
     }
+
+    private val _isShuffleEnabled = MutableStateFlow(false)
+    val isShuffleEnabled: StateFlow<Boolean> = _isShuffleEnabled.asStateFlow()
+
+    private val _repeatMode = MutableStateFlow(Player.REPEAT_MODE_OFF)
+    val repeatMode: StateFlow<Int> = _repeatMode.asStateFlow()
 }

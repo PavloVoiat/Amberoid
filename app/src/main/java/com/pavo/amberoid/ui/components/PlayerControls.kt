@@ -20,10 +20,10 @@ fun SkipPrevious(
 ) {
     IconButton(
         modifier = Modifier
-            .size(50.dp)
+            .size(60.dp)
             .background(
                 color = color,
-                shape = RoundedCornerShape(25.dp)
+                shape = RoundedCornerShape(50)
             ),
         onClick = onPreviousClick
     ) {
@@ -44,10 +44,10 @@ fun SkipNext(
 ) {
     IconButton(
         modifier = Modifier
-            .size(50.dp)
+            .size(60.dp)
             .background(
                 color = color,
-                shape = RoundedCornerShape(25.dp)
+                shape = RoundedCornerShape(50)
             ),
         onClick = onNextClick
     ) {
@@ -69,7 +69,7 @@ fun PlayPause(
 ) {
     IconButton(
         modifier = Modifier
-            .size(75.dp)
+            .size(85.dp)
             .background(
                 color = color,
                 shape = RoundedCornerShape(50)
