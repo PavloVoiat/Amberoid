@@ -33,7 +33,10 @@ fun PlaylistButton(color: Color) {
 }
 
 @Composable
-fun ShufflePlaylistButton(color: Color) {
+fun ShufflePlaylistButton(
+    color: Color,
+    onShuffle: () -> Unit
+) {
     Box(
         modifier = Modifier
             .size(35.dp)
@@ -53,7 +56,10 @@ fun ShufflePlaylistButton(color: Color) {
 }
 
 @Composable
-fun RepeatPlaylistButton(color: Color) {
+fun RepeatPlaylistButton(
+    color: Color,
+    onRepeat: () -> Unit
+) {
     Box(
         modifier = Modifier
             .size(35.dp)

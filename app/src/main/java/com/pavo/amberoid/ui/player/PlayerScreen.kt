@@ -180,11 +180,17 @@ fun AmberoidUI(
             ) {
                 PlaylistButton(color = secondaryButtonColor)
 
-                ShufflePlaylistButton(color = secondaryButtonColor)
+                ShufflePlaylistButton(
+		    color = secondaryButtonColor,
+		    onShuffle = viewModel.shuffle()
+		)
 
                 Spacer(modifier = Modifier.width(100.dp))
 
-                RepeatPlaylistButton(color = secondaryButtonColor)
+                RepeatPlaylistButton(
+		    color = secondaryButtonColor,
+		    onRepeat = viewModel.repeat()
+		)
 
                 SettingsButton(color = secondaryButtonColor)
             }
