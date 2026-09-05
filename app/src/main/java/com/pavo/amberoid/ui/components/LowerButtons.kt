@@ -14,15 +14,17 @@ import androidx.compose.ui.unit.dp
 import com.pavo.amberoid.NerdFont
 
 @Composable
-fun PlaylistButton(color: Color) {
-    Box(
+fun PlaylistButton(
+    color: Color,
+    onClick: () -> Unit
+) {
+    IconButton(
         modifier = Modifier
-            .size(48.dp)
             .background(
                 color = color,
                 shape = RoundedCornerShape(50)
             ),
-        contentAlignment = Alignment.Center
+        onClick = onClick
     ) {
         Text(
             text = "\uDB80\uDF5C",

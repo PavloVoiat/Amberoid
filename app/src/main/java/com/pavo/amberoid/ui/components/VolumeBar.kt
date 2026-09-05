@@ -3,9 +3,11 @@ package com.pavo.amberoid.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -64,6 +66,7 @@ fun VolumeUp(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VolumeBar(
     color: Color,
@@ -74,11 +77,19 @@ fun VolumeBar(
         value = volume,
         onValueChange = onVolumeChange,
         valueRange = 0f..1f,
-        colors = SliderDefaults.colors(
-            thumbColor = color,
-            activeTrackColor = color,
-            inactiveTrackColor = color.copy(alpha = 0.3f)
-        ),
+        thumb = { sliderState -> Box(Modifier.size(0.dp)) },
+        track = {sliderState ->
+            SliderDefaults.Track(
+                sliderState = sliderState,
+                modifier = Modifier.height(16.dp),
+                thumbTrackGapSize = 0.dp,
+                trackInsideCornerSize = 2.dp,
+                colors = SliderDefaults.colors(
+                    activeTrackColor = color,
+                    inactiveTrackColor = color.copy(alpha = 0.3f)
+                )
+            )
+        },
         modifier = Modifier.width(200.dp)
     )
 }

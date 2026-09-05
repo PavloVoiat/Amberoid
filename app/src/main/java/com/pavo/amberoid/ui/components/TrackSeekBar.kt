@@ -3,19 +3,16 @@ package com.pavo.amberoid.ui.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -26,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import java.util.Locale
-import kotlin.math.sin
 import kotlin.random.Random
 
 fun formatTime(ms: Long): String {
@@ -51,7 +47,7 @@ fun WaveformSeekBar(
 
     val barHeights = remember(songId) {
         val random = Random(songId.toInt())
-        val barCount = 45
+        val barCount = 75
 
         List(barCount) { index ->
             0.25f + random.nextFloat() * 0.75f
@@ -106,18 +102,6 @@ fun WaveformSeekBar(
 }
 
 @Composable
-fun TrackSeekBar() {
-    Box(
-        modifier = Modifier
-            .size(300.dp, 50.dp)
-            .background(
-                color = Color(0xFF7C80B5),
-                shape = RoundedCornerShape(50)
-            )
-    )
-}
-
-@Composable
 fun PlayedTrackTime(positionMs: Long) {
     Text(
         text = formatTime(positionMs),
@@ -131,11 +115,14 @@ fun PlayedTrackTime(positionMs: Long) {
 @Composable
 fun TrackLength(positionMs: Long, durationMs: Long) {
     val remainingMs = (durationMs - positionMs).coerceAtLeast(0L)
+    var showRemainingTime by remember { mutableStateOf(true) }
+
     Text(
-        text = "-${formatTime(remainingMs)}",
+        text = if (showRemainingTime) "-${formatTime(remainingMs)}" else formatTime(durationMs),
 
         fontSize = 3.em,
         fontWeight = FontWeight.Medium,
-        color = Color.White
+        color = Color.White,
+        modifier = Modifier.clickable { showRemainingTime = !showRemainingTime}
     )
 }

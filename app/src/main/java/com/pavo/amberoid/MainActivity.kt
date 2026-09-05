@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                         permissionLauncher.launch(permissionToRequest)
                     }
                 }
-                AmberoidUI(viewModel = viewModel)
+                AmberoidUI()
             }
         }
     }

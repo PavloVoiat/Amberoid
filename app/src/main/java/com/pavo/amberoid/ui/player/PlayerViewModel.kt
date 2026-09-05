@@ -344,4 +344,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _repeatMode = MutableStateFlow(Player.REPEAT_MODE_OFF)
     val repeatMode: StateFlow<Int> = _repeatMode.asStateFlow()
+
+    fun play() {
+        player.play()
+    }
 }

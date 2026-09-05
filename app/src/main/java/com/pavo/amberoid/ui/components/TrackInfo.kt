@@ -83,18 +83,18 @@ fun ArtistName(artist: String) {
     )
 }
 
-@Composable
-fun TrackAlbum() {
-    Text(
-        text = "Track Album",
-
-        fontSize = 4.em,
-        fontWeight = FontWeight.Normal,
-        color = Color.White,
-        textAlign = TextAlign.Center,
-        maxLines = 1,
-        modifier = Modifier
-            .width(300.dp)
-            .basicMarquee()
-    )
-}
+//@Composable
+//fun TrackAlbum() {
+//    Text(
+//        text = "Track Album",
+//
+//        fontSize = 4.em,
+//        fontWeight = FontWeight.Normal,
+//        color = Color.White,
+//        textAlign = TextAlign.Center,
+//        maxLines = 1,
+//        modifier = Modifier
+//            .width(300.dp)
+//            .basicMarquee()
+//    )
+//}
