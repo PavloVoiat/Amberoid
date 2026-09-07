@@ -16,7 +16,8 @@ import com.pavo.amberoid.NerdFont
 @Composable
 fun SkipPrevious(
     onPreviousClick: () -> Unit,
-    color: Color
+    color: Color,
+    iconColor: Color = Color.White
 ) {
     IconButton(
         modifier = Modifier
@@ -30,7 +31,7 @@ fun SkipPrevious(
         Text(
             text = "\uDB81\uDCAE",
 
-            color = Color.White,
+            color = iconColor,
             fontFamily = NerdFont,
             fontSize = 5.em
         )
@@ -40,7 +41,8 @@ fun SkipPrevious(
 @Composable
 fun SkipNext(
     onNextClick: () -> Unit,
-    color: Color
+    color: Color,
+    iconColor: Color = Color.White
 ) {
     IconButton(
         modifier = Modifier
@@ -54,7 +56,7 @@ fun SkipNext(
         Text(
             text = "\uDB81\uDCAD",
 
-            color = Color.White,
+            color = iconColor,
             fontFamily = NerdFont,
             fontSize = 5.em
         )
@@ -65,7 +67,8 @@ fun SkipNext(
 fun PlayPause(
     isPlaying: Boolean,
     onPlayToggle: () -> Unit,
-    color: Color
+    color: Color,
+    iconColor: Color = Color.White
 ) {
     IconButton(
         modifier = Modifier
@@ -79,7 +82,7 @@ fun PlayPause(
         Text(
             text = if (isPlaying) "\uDB80\uDFE4" else "\uF04B",
 
-            color = Color.White,
+            color = iconColor,
             fontFamily = NerdFont,
             fontSize = if (isPlaying) 8.em else 6.em,
             modifier = Modifier

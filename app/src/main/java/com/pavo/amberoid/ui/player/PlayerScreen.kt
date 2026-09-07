@@ -21,10 +21,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.pavo.amberoid.ui.components.ArtistName
 import com.pavo.amberoid.ui.components.PlayPause
 import com.pavo.amberoid.ui.components.PlayedTrackTime
@@ -44,6 +48,11 @@ import com.pavo.amberoid.ui.components.VolumeUp
 import com.pavo.amberoid.ui.components.WaveformSeekBar
 import kotlinx.coroutines.launch
 
+fun getContrastColor(color: Color): Color {
+    val luminance = 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue
+    return if (luminance > 0.5) Color.Black else Color.White
+}
+
 @Composable
 fun AmberoidUI(
     viewModel: PlayerViewModel = viewModel()
@@ -56,8 +65,13 @@ fun AmberoidUI(
     val colorScheme by viewModel.colorScheme.collectAsStateWithLifecycle()
     val topColor = colorScheme.backgroundTop
     val bottomColor = colorScheme.backgroundBottom
-    val primaryButtonColor = colorScheme.textPrimary
-    val secondaryButtonColor = colorScheme.textSecondary
+    val primaryButtonColor = colorScheme.primary
+    val secondaryButtonColor = colorScheme.secondary
+    val contentColor = if (colorScheme.isDark) Color.White else Color.Black
+    
+    val primaryIconColor = getContrastColor(primaryButtonColor)
+    val secondaryIconColor = getContrastColor(secondaryButtonColor)
+    
     val volume by viewModel.volume.collectAsStateWithLifecycle()
     val isShuffleEnabled by viewModel.isShuffleEnabled.collectAsStateWithLifecycle()
     val repeatMode by viewModel.repeatMode.collectAsStateWithLifecycle()
@@ -96,17 +110,36 @@ fun AmberoidUI(
         }
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            animatedTopColor,
-                            animatedBottomColor
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Highly blurred background artwork
+            if (artworkBytes != null) {
+                AsyncImage(
+                    model = artworkBytes,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(80.dp)
+                )
+            }
+
+            // Darkening scrim and gradient for depth and legibility
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = 0.3f),
+                                animatedTopColor.copy(alpha = 0.4f),
+                                animatedBottomColor.copy(alpha = 0.7f),
+                                Color.Black.copy(alpha = 0.8f)
+                            )
                         )
                     )
-                )
-        ) {
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -120,9 +153,15 @@ fun AmberoidUI(
                 Spacer(modifier = Modifier.height(50.dp))
 
 
-                TrackTitle(title = currentSong?.title ?: "No Track")
+                TrackTitle(
+                    title = currentSong?.title ?: "No Track",
+                    color = contentColor
+                )
 
-                ArtistName(artist = currentSong?.artist ?: "Unknown Artist")
+                ArtistName(
+                    artist = currentSong?.artist ?: "Unknown Artist",
+                    color = contentColor.copy(alpha = 0.8f)
+                )
 
 
                 Spacer(modifier = Modifier.height(50.dp))
@@ -135,7 +174,9 @@ fun AmberoidUI(
                         val targetMs = (fraction * duration).toLong()
                         viewModel.seekTo(targetMs)
                     },
-                    modifier = Modifier.padding(horizontal = 30.dp)
+                    modifier = Modifier.padding(horizontal = 30.dp),
+                    activeColor = contentColor,
+                    inactiveColor = contentColor.copy(alpha = 0.3f)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -144,9 +185,9 @@ fun AmberoidUI(
                     modifier = Modifier.size(300.dp, 17.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    PlayedTrackTime(positionMs = currentPosition)
+                    PlayedTrackTime(positionMs = currentPosition, color = contentColor)
 
-                    TrackLength(positionMs = currentPosition, durationMs = duration)
+                    TrackLength(positionMs = currentPosition, durationMs = duration, color = contentColor)
                 }
 
 
@@ -160,7 +201,8 @@ fun AmberoidUI(
                 ) {
                     VolumeDown(
                         color = primaryButtonColor,
-                        onClick = { viewModel.decreaseVolume() }
+                        onClick = { viewModel.decreaseVolume() },
+                        iconColor = primaryIconColor
                     )
 
                     VolumeBar(
@@ -171,7 +213,8 @@ fun AmberoidUI(
 
                     VolumeUp(
                         color = primaryButtonColor,
-                        onClick = { viewModel.increaseVolume() }
+                        onClick = { viewModel.increaseVolume() },
+                        iconColor = primaryIconColor
                     )
                 }
 
@@ -182,18 +225,21 @@ fun AmberoidUI(
                 ) {
                     SkipPrevious(
                         onPreviousClick = { viewModel.playPrevious() },
-                        color = secondaryButtonColor
+                        color = secondaryButtonColor,
+                        iconColor = secondaryIconColor
                     )
 
                     PlayPause(
                         isPlaying = isPlaying,
                         onPlayToggle = { viewModel.togglePlayPause() },
-                        color = primaryButtonColor
+                        color = primaryButtonColor,
+                        iconColor = primaryIconColor
                     )
 
                     SkipNext(
                         onNextClick = { viewModel.playNext() },
-                        color = secondaryButtonColor
+                        color = secondaryButtonColor,
+                        iconColor = secondaryIconColor
                     )
                 }
 
@@ -204,13 +250,15 @@ fun AmberoidUI(
                 ) {
                     PlaylistButton(
                         color = secondaryButtonColor,
-                        onClick = { scope.launch { drawerState.open() } }
+                        onClick = { scope.launch { drawerState.open() } },
+                        iconColor = secondaryIconColor
                     )
 
                     ShufflePlaylistButton(
                         color = secondaryButtonColor,
                         onShuffle = { viewModel.toggleShuffle() },
-                        isShuffleEnabled = isShuffleEnabled
+                        isShuffleEnabled = isShuffleEnabled,
+                        iconColor = secondaryIconColor
                     )
 
                     Spacer(modifier = Modifier.width(100.dp))
@@ -218,10 +266,14 @@ fun AmberoidUI(
                     RepeatPlaylistButton(
                         color = secondaryButtonColor,
                         onRepeat = { viewModel.toggleRepeatMode() },
-                        repeatMode = repeatMode
+                        repeatMode = repeatMode,
+                        iconColor = secondaryIconColor
                     )
 
-                    SettingsButton(color = secondaryButtonColor)
+                    SettingsButton(
+                        color = secondaryButtonColor,
+                        iconColor = secondaryIconColor
+                    )
                 }
             }
         }

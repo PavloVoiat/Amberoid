@@ -16,7 +16,8 @@ import com.pavo.amberoid.NerdFont
 @Composable
 fun PlaylistButton(
     color: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    iconColor: Color = Color.White
 ) {
     IconButton(
         modifier = Modifier
@@ -29,7 +30,7 @@ fun PlaylistButton(
         Text(
             text = "\uDB80\uDF5C",
 
-            color = Color.White,
+            color = iconColor,
             fontFamily = NerdFont
         )
     }
@@ -39,7 +40,8 @@ fun PlaylistButton(
 fun ShufflePlaylistButton(
     color: Color,
     onShuffle: () -> Unit,
-    isShuffleEnabled: Boolean
+    isShuffleEnabled: Boolean,
+    iconColor: Color = Color.White
 ) {
     IconButton(
         modifier = Modifier
@@ -52,7 +54,7 @@ fun ShufflePlaylistButton(
         Text(
             text = "\uDB81\uDC9F",
 
-            color = Color.White,
+            color = iconColor,
             fontFamily = NerdFont,
         )
     }
@@ -62,7 +64,8 @@ fun ShufflePlaylistButton(
 fun RepeatPlaylistButton(
     color: Color,
     onRepeat: () -> Unit,
-    repeatMode: Int
+    repeatMode: Int,
+    iconColor: Color = Color.White
 ) {
     IconButton(
         modifier = Modifier
@@ -85,14 +88,14 @@ fun RepeatPlaylistButton(
                 }
             },
 
-            color = Color.White,
+            color = iconColor,
             fontFamily = NerdFont,
         )
     }
 }
 
 @Composable
-fun SettingsButton(color: Color) {
+fun SettingsButton(color: Color, iconColor: Color = Color.White) {
     Box(
         modifier = Modifier
             .size(48.dp)
@@ -105,7 +108,7 @@ fun SettingsButton(color: Color) {
         Text(
             text = "\uEB51",
 
-            color = Color.White,
+            color = iconColor,
             fontFamily = NerdFont
         )
     }

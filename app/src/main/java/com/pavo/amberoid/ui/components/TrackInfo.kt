@@ -52,13 +52,16 @@ fun TrackImage(artworkBytes: ByteArray?) {
 }
 
 @Composable
-fun TrackTitle(title: String) {
+fun TrackTitle(
+    title: String,
+    color: Color
+) {
     Text(
         text = title,
 
         fontSize = 7.em,
         fontWeight = FontWeight.Bold,
-        color = Color.White,
+        color = color,
         textAlign = TextAlign.Center,
         maxLines = 1,
         modifier = Modifier
@@ -68,13 +71,16 @@ fun TrackTitle(title: String) {
 }
 
 @Composable
-fun ArtistName(artist: String) {
+fun ArtistName(
+    artist: String,
+    color: Color
+) {
     Text(
         text = artist,
 
         fontSize = 5.em,
         fontWeight = FontWeight.Medium,
-        color = Color.White,
+        color = color,
         textAlign = TextAlign.Center,
         maxLines = 1,
         modifier = Modifier

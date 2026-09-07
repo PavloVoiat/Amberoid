@@ -37,7 +37,9 @@ fun WaveformSeekBar(
     progressFraction: Float,
     songId: Long,
     onSeek: (Float) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    activeColor: Color = Color.White,
+    inactiveColor: Color = Color(0x66FFFFFF)
 ) {
     val animatedProgress by animateFloatAsState(
         targetValue = progressFraction.coerceIn(0f, 1f),
@@ -53,9 +55,6 @@ fun WaveformSeekBar(
             0.25f + random.nextFloat() * 0.75f
         }
     }
-
-    val activeColor = Color.White
-    val inactiveColor = Color(0x66FFFFFF)
 
     Canvas(
         modifier = modifier
@@ -102,18 +101,18 @@ fun WaveformSeekBar(
 }
 
 @Composable
-fun PlayedTrackTime(positionMs: Long) {
+fun PlayedTrackTime(positionMs: Long, color: Color = Color.White) {
     Text(
         text = formatTime(positionMs),
 
         fontSize = 3.em,
         fontWeight = FontWeight.Medium,
-        color = Color.White
+        color = color
     )
 }
 
 @Composable
-fun TrackLength(positionMs: Long, durationMs: Long) {
+fun TrackLength(positionMs: Long, durationMs: Long, color: Color = Color.White) {
     val remainingMs = (durationMs - positionMs).coerceAtLeast(0L)
     var showRemainingTime by remember { mutableStateOf(true) }
 
@@ -122,7 +121,7 @@ fun TrackLength(positionMs: Long, durationMs: Long) {
 
         fontSize = 3.em,
         fontWeight = FontWeight.Medium,
-        color = Color.White,
+        color = color,
         modifier = Modifier.clickable { showRemainingTime = !showRemainingTime}
     )
 }

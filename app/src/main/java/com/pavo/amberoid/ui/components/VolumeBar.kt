@@ -21,7 +21,8 @@ import com.pavo.amberoid.NerdFont
 @Composable
 fun VolumeDown(
     color: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    iconColor: Color = Color.White
 ) {
     Box(
         modifier = Modifier
@@ -36,7 +37,7 @@ fun VolumeDown(
         Text(
             text = "\uDB81\uDD80",
 
-            color = Color.White,
+            color = iconColor,
             fontFamily = NerdFont
         )
     }
@@ -45,7 +46,8 @@ fun VolumeDown(
 @Composable
 fun VolumeUp(
     color: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    iconColor: Color = Color.White
 ) {
     Box(
         modifier = Modifier
@@ -60,7 +62,7 @@ fun VolumeUp(
         Text(
             text = "\uDB81\uDD7E",
 
-            color = Color.White,
+            color = iconColor,
             fontFamily = NerdFont
         )
     }
