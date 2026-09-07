@@ -17,7 +17,6 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -49,10 +48,10 @@ import kotlinx.coroutines.launch
 fun AmberoidUI(
     viewModel: PlayerViewModel = viewModel()
 ) {
-    val isPlaying by viewModel.isPlaying.collectAsState()
-    val currentSong by viewModel.currentSong.collectAsState()
-    val currentPosition by viewModel.currentPosition.collectAsState()
-    val duration by viewModel.duration.collectAsState()
+    val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
+    val currentSong by viewModel.currentSong.collectAsStateWithLifecycle()
+    val currentPosition by viewModel.currentPosition.collectAsStateWithLifecycle()
+    val duration by viewModel.duration.collectAsStateWithLifecycle()
     val artworkBytes by viewModel.artworkBytes.collectAsStateWithLifecycle()
     val colorScheme by viewModel.colorScheme.collectAsStateWithLifecycle()
     val topColor = colorScheme.backgroundTop

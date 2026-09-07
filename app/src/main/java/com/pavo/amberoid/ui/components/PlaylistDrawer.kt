@@ -20,7 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +38,8 @@ import coil3.compose.AsyncImage
 import com.pavo.amberoid.NerdFont
 import com.pavo.amberoid.data.model.Song
 import com.pavo.amberoid.ui.player.PlayerViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun PlaylistDrawer(
@@ -97,8 +100,10 @@ private fun PlaylistItem(
 ) {
     val context = LocalContext.current
 
-    val artworkBytes = remember(song.contentUri) {
-        viewModel.getArtwork(context, song.contentUri)
+    val artworkBytes by produceState<ByteArray?>(initialValue = null, key1 = song.contentUri) {
+        value = withContext(Dispatchers.IO) {
+            viewModel.getArtwork(context, song.contentUri)
+        }
     }
 
     val backgroundColor = if (isSelected) {
