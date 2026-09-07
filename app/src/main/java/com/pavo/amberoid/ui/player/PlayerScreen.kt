@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,6 +59,7 @@ fun getContrastColor(color: Color): Color {
 
 @Composable
 fun AmberoidUI(
+    windowSizeClass: WindowSizeClass,
     viewModel: PlayerViewModel = viewModel()
 ) {
     val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
@@ -140,140 +145,287 @@ fun AmberoidUI(
                     )
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 40.dp, bottom = 25.dp),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                TrackImage(artworkBytes = artworkBytes)
-
-
-                Spacer(modifier = Modifier.height(50.dp))
-
-
-                TrackTitle(
-                    title = currentSong?.title ?: "No Track",
-                    color = contentColor
-                )
-
-                ArtistName(
-                    artist = currentSong?.artist ?: "Unknown Artist",
-                    color = contentColor.copy(alpha = 0.8f)
-                )
-
-
-                Spacer(modifier = Modifier.height(50.dp))
-
-
-                WaveformSeekBar(
-                    progressFraction = progressFraction,
-                    songId = currentSong?.id ?: 0L,
-                    onSeek = { fraction ->
-                        val targetMs = (fraction * duration).toLong()
-                        viewModel.seekTo(targetMs)
-                    },
-                    modifier = Modifier.padding(horizontal = 30.dp),
-                    activeColor = contentColor,
-                    inactiveColor = contentColor.copy(alpha = 0.3f)
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(
-                    modifier = Modifier.size(300.dp, 17.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+            if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) {
+                // Portrait Layout
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 40.dp, bottom = 25.dp),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    PlayedTrackTime(positionMs = currentPosition, color = contentColor)
+                    TrackImage(
+                        artworkBytes = artworkBytes,
+                        modifier = Modifier.size(300.dp)
+                    )
 
-                    TrackLength(positionMs = currentPosition, durationMs = duration, color = contentColor)
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    TrackTitle(
+                        title = currentSong?.title ?: "No Track",
+                        color = contentColor
+                    )
+
+                    ArtistName(
+                        artist = currentSong?.artist ?: "Unknown Artist",
+                        color = contentColor.copy(alpha = 0.8f)
+                    )
+
+                    Spacer(modifier = Modifier.height(50.dp))
+
+                    WaveformSeekBar(
+                        progressFraction = progressFraction,
+                        songId = currentSong?.id ?: 0L,
+                        onSeek = { fraction ->
+                            val targetMs = (fraction * duration).toLong()
+                            viewModel.seekTo(targetMs)
+                        },
+                        modifier = Modifier.padding(horizontal = 30.dp),
+                        activeColor = contentColor,
+                        inactiveColor = contentColor.copy(alpha = 0.3f)
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        modifier = Modifier.size(300.dp, 17.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        PlayedTrackTime(positionMs = currentPosition, color = contentColor)
+                        TrackLength(
+                            positionMs = currentPosition,
+                            durationMs = duration,
+                            color = contentColor
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Row(
+                        modifier = Modifier.size(300.dp, 25.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        VolumeDown(
+                            color = primaryButtonColor,
+                            onClick = { viewModel.decreaseVolume() },
+                            iconColor = primaryIconColor
+                        )
+
+                        VolumeBar(
+                            color = secondaryButtonColor,
+                            onVolumeChange = { newVolume -> viewModel.setVolume(newVolume) },
+                            volume = volume
+                        )
+
+                        VolumeUp(
+                            color = primaryButtonColor,
+                            onClick = { viewModel.increaseVolume() },
+                            iconColor = primaryIconColor
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.size(250.dp, 100.dp),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SkipPrevious(
+                            onPreviousClick = { viewModel.playPrevious() },
+                            color = secondaryButtonColor,
+                            iconColor = secondaryIconColor
+                        )
+
+                        PlayPause(
+                            isPlaying = isPlaying,
+                            onPlayToggle = { viewModel.togglePlayPause() },
+                            color = primaryButtonColor,
+                            iconColor = primaryIconColor
+                        )
+
+                        SkipNext(
+                            onNextClick = { viewModel.playNext() },
+                            color = secondaryButtonColor,
+                            iconColor = secondaryIconColor
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.size(300.dp, 48.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        PlaylistButton(
+                            color = secondaryButtonColor,
+                            onClick = { scope.launch { drawerState.open() } },
+                            iconColor = secondaryIconColor
+                        )
+
+                        ShufflePlaylistButton(
+                            color = secondaryButtonColor,
+                            onShuffle = { viewModel.toggleShuffle() },
+                            isShuffleEnabled = isShuffleEnabled,
+                            iconColor = secondaryIconColor
+                        )
+
+                        Spacer(modifier = Modifier.width(100.dp))
+
+                        RepeatPlaylistButton(
+                            color = secondaryButtonColor,
+                            onRepeat = { viewModel.toggleRepeatMode() },
+                            repeatMode = repeatMode,
+                            iconColor = secondaryIconColor
+                        )
+
+                        SettingsButton(
+                            color = secondaryButtonColor,
+                            iconColor = secondaryIconColor
+                        )
+                    }
                 }
-
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-
+            } else {
+                // Landscape / Large Screen Layout
                 Row(
-                    modifier = Modifier.size(300.dp, 25.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 32.dp, vertical = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    VolumeDown(
-                        color = primaryButtonColor,
-                        onClick = { viewModel.decreaseVolume() },
-                        iconColor = primaryIconColor
-                    )
+                    // Left Column: Artwork (Scale to fit)
+                    Box(modifier = Modifier.weight(1f).aspectRatio(1f), contentAlignment = Alignment.Center) {
+                        TrackImage(
+                            artworkBytes = artworkBytes,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
 
-                    VolumeBar(
-                        color = secondaryButtonColor,
-                        onVolumeChange = { newVolume -> viewModel.setVolume(newVolume) },
-                        volume = volume
-                    )
+                    Spacer(modifier = Modifier.width(32.dp))
 
-                    VolumeUp(
-                        color = primaryButtonColor,
-                        onClick = { viewModel.increaseVolume() },
-                        iconColor = primaryIconColor
-                    )
-                }
+                    // Right Column: Info and Controls
+                    Column(
+                        modifier = Modifier.weight(1.5f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TrackTitle(
+                            title = currentSong?.title ?: "No Track",
+                            color = contentColor
+                        )
 
-                Row(
-                    modifier = Modifier.size(250.dp, 100.dp),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    SkipPrevious(
-                        onPreviousClick = { viewModel.playPrevious() },
-                        color = secondaryButtonColor,
-                        iconColor = secondaryIconColor
-                    )
+                        ArtistName(
+                            artist = currentSong?.artist ?: "Unknown Artist",
+                            color = contentColor.copy(alpha = 0.8f)
+                        )
 
-                    PlayPause(
-                        isPlaying = isPlaying,
-                        onPlayToggle = { viewModel.togglePlayPause() },
-                        color = primaryButtonColor,
-                        iconColor = primaryIconColor
-                    )
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    SkipNext(
-                        onNextClick = { viewModel.playNext() },
-                        color = secondaryButtonColor,
-                        iconColor = secondaryIconColor
-                    )
-                }
+                        WaveformSeekBar(
+                            progressFraction = progressFraction,
+                            songId = currentSong?.id ?: 0L,
+                            onSeek = { fraction ->
+                                val targetMs = (fraction * duration).toLong()
+                                viewModel.seekTo(targetMs)
+                            },
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            activeColor = contentColor,
+                            inactiveColor = contentColor.copy(alpha = 0.3f)
+                        )
 
-                Row(
-                    modifier = Modifier.size(300.dp, 48.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    PlaylistButton(
-                        color = secondaryButtonColor,
-                        onClick = { scope.launch { drawerState.open() } },
-                        iconColor = secondaryIconColor
-                    )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            PlayedTrackTime(positionMs = currentPosition, color = contentColor)
+                            TrackLength(
+                                positionMs = currentPosition,
+                                durationMs = duration,
+                                color = contentColor
+                            )
+                        }
 
-                    ShufflePlaylistButton(
-                        color = secondaryButtonColor,
-                        onShuffle = { viewModel.toggleShuffle() },
-                        isShuffleEnabled = isShuffleEnabled,
-                        iconColor = secondaryIconColor
-                    )
+                        // Compact Controls Row
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            SkipPrevious(
+                                onPreviousClick = { viewModel.playPrevious() },
+                                color = secondaryButtonColor,
+                                iconColor = secondaryIconColor
+                            )
 
-                    Spacer(modifier = Modifier.width(100.dp))
+                            PlayPause(
+                                isPlaying = isPlaying,
+                                onPlayToggle = { viewModel.togglePlayPause() },
+                                color = primaryButtonColor,
+                                iconColor = primaryIconColor
+                            )
 
-                    RepeatPlaylistButton(
-                        color = secondaryButtonColor,
-                        onRepeat = { viewModel.toggleRepeatMode() },
-                        repeatMode = repeatMode,
-                        iconColor = secondaryIconColor
-                    )
+                            SkipNext(
+                                onNextClick = { viewModel.playNext() },
+                                color = secondaryButtonColor,
+                                iconColor = secondaryIconColor
+                            )
+                        }
 
-                    SettingsButton(
-                        color = secondaryButtonColor,
-                        iconColor = secondaryIconColor
-                    )
+                        // Compact Volume & Utility Row
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            VolumeDown(
+                                color = primaryButtonColor,
+                                onClick = { viewModel.decreaseVolume() },
+                                iconColor = primaryIconColor
+                            )
+
+                            VolumeBar(
+                                color = secondaryButtonColor,
+                                onVolumeChange = { newVolume -> viewModel.setVolume(newVolume) },
+                                volume = volume
+                            )
+
+                            VolumeUp(
+                                color = primaryButtonColor,
+                                onClick = { viewModel.increaseVolume() },
+                                iconColor = primaryIconColor
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            PlaylistButton(
+                                color = secondaryButtonColor,
+                                onClick = { scope.launch { drawerState.open() } },
+                                iconColor = secondaryIconColor
+                            )
+
+                            ShufflePlaylistButton(
+                                color = secondaryButtonColor,
+                                onShuffle = { viewModel.toggleShuffle() },
+                                isShuffleEnabled = isShuffleEnabled,
+                                iconColor = secondaryIconColor
+                            )
+
+                            RepeatPlaylistButton(
+                                color = secondaryButtonColor,
+                                onRepeat = { viewModel.toggleRepeatMode() },
+                                repeatMode = repeatMode,
+                                iconColor = secondaryIconColor
+                            )
+
+                            SettingsButton(
+                                color = secondaryButtonColor,
+                                iconColor = secondaryIconColor
+                            )
+                        }
+                    }
                 }
             }
         }

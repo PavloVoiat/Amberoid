@@ -7,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -30,8 +32,10 @@ class MainActivity : ComponentActivity() {
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         windowInsetController.hide(WindowInsetsCompat.Type.systemBars())
 
+        @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
         setContent {
             AmberoidTheme {
+                val windowSizeClass = calculateWindowSizeClass(this)
                 val viewModel: PlayerViewModel = viewModel()
                 val context = androidx.compose.ui.platform.LocalContext.current
 
@@ -61,7 +65,7 @@ class MainActivity : ComponentActivity() {
                         permissionLauncher.launch(permissionToRequest)
                     }
                 }
-                AmberoidUI()
+                AmberoidUI(windowSizeClass = windowSizeClass)
             }
         }
     }

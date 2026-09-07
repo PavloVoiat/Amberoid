@@ -96,14 +96,14 @@ fun RepeatPlaylistButton(
 
 @Composable
 fun SettingsButton(color: Color, iconColor: Color = Color.White) {
-    Box(
+    IconButton(
         modifier = Modifier
             .size(48.dp)
             .background(
                 color = color,
                 shape = RoundedCornerShape(50)
             ),
-        contentAlignment = Alignment.Center
+        onClick = {}
     ) {
         Text(
             text = "\uEB51",

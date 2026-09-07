@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -23,10 +22,9 @@ import coil3.compose.AsyncImage
 import com.pavo.amberoid.NerdFont
 
 @Composable
-fun TrackImage(artworkBytes: ByteArray?) {
+fun TrackImage(artworkBytes: ByteArray?, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
-            .size(300.dp)
+        modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center

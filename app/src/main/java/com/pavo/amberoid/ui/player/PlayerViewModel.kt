@@ -404,20 +404,20 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     )
 
     private suspend fun extractFullPalette(bytes: ByteArray?): CoverPalette {
-        val defaultPrimary = Color(0xFFBB86FC)
-        val defaultBackgroundTop = Color(0xFF1A1A2E)
-        val defaultBackgroundBottom = Color(0xFF090912)
+        val defaultPrimary = Color.White
+        val defaultBackgroundTop = Color(0xFF121212)
+        val defaultBackgroundBottom = Color.Black
 
         if (bytes == null) {
             return CoverPalette(
                 primary = defaultPrimary,
-                secondary = Color(0xFF03DAC6),
+                secondary = Color.LightGray,
                 backgroundTop = defaultBackgroundTop,
                 backgroundBottom = defaultBackgroundBottom,
-                surface = Color(0xFF252535),
+                surface = Color(0xFF1E1E1E),
                 textPrimary = Color.White,
                 textSecondary = Color.LightGray.copy(0.7f),
-                accent = defaultPrimary,
+                accent = Color.Gray,
                 isDark = true,
                 allSwatches = emptyList()
             )
@@ -438,11 +438,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 val dominant = palette.dominantSwatch
                 val muted = palette.mutedSwatch
 
-                // Check if the image is mostly monochrome (low saturation)
-                val isMonochrome = palette.swatches.all { swatch ->
-                    val hsl = swatch.hsl
-                    hsl[1] < 0.15f // saturation < 15%
-                }
+                // Improved monochrome detection: check if average saturation is very low
+                val avgSaturation = palette.swatches.map { it.hsl[1] }.average()
+                val isMonochrome = avgSaturation < 0.12f
 
                 val primaryColor: Color
                 val accentColor: Color
@@ -451,26 +449,28 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 val isDark: Boolean
 
                 if (isMonochrome) {
-                    primaryColor = Color.White.copy(alpha = 0.9f)
-                    accentColor = Color.LightGray
-                    topColor = Color(0xFF2C2C2C)
+                    primaryColor = Color.White.copy(alpha = 0.95f)
+                    accentColor = Color(0xFF8E8E93)
+                    topColor = Color(0xFF1C1C1E)
                     bottomColor = Color.Black
                     isDark = true
                 } else {
                     primaryColor = vibrant?.rgb?.let { Color(it) }
                         ?: lightVibrant?.rgb?.let { Color(it) }
-                        ?: Color(0xFFBB86FC)
+                        ?: dominant?.rgb?.let { Color(it) }
+                        ?: defaultPrimary
 
                     accentColor = lightVibrant?.rgb?.let { Color(it) }
                         ?: vibrant?.rgb?.let { Color(it) }
-                        ?: Color(0xFF03DAC6)
+                        ?: muted?.rgb?.let { Color(it) }
+                        ?: Color.Gray
 
                     topColor = darkVibrant?.rgb?.let { Color(it) }
                         ?: muted?.rgb?.let { Color(it) }
-                        ?: Color(0xFF1A1A2E)
+                        ?: Color(0xFF1A1A1A)
 
                     bottomColor = dominant?.rgb?.let { Color(it) }
-                        ?: Color(0xFF090912)
+                        ?: defaultBackgroundBottom
                     
                     isDark = calculateLuminance(bottomColor) < 0.5f
                 }
@@ -512,14 +512,14 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = CoverPalette(
-                primary = Color(0xFFBB86FC),
-                secondary = Color(0xFF03DAC6),
-                backgroundTop = Color(0xFF1E1E2C),
-                backgroundBottom = Color(0xFF0F0F1A),
-                surface = Color(0xFF2D2D3F),
+                primary = Color.White,
+                secondary = Color.LightGray,
+                backgroundTop = Color(0xFF121212),
+                backgroundBottom = Color.Black,
+                surface = Color(0xFF1E1E1E),
                 textPrimary = Color.White,
                 textSecondary = Color.LightGray,
-                accent = Color(0xFFBB86FC),
+                accent = Color.Gray,
                 isDark = true,
                 allSwatches = emptyList()
             )
