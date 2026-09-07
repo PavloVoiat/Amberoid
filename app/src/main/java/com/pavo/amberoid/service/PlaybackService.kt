@@ -1,5 +1,8 @@
 package com.pavo.amberoid.service
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
@@ -12,6 +15,7 @@ class PlaybackService : MediaSessionService() {
 
     override fun onCreate() {
         super.onCreate()
+        createNotificationChannel()
 
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(C.USAGE_MEDIA)
@@ -40,5 +44,20 @@ class PlaybackService : MediaSessionService() {
         mediaSession = null
 
         super.onDestroy()
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "amberoid_playback_channel",
+                "Media Playback",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Controls for media playback"
+                setShowBadge(false)
+            }
+            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
     }
 }

@@ -12,6 +12,7 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -425,6 +426,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
         return withContext(Dispatchers.IO) {
             try {
+                // Note: Palette needs to read pixels, so HARDWARE config is not suitable here.
+                // We let BitmapFactory use its default (usually ARGB_8888).
                 val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                     ?: return@withContext extractFullPalette(null)
 
@@ -502,7 +505,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     private fun calculateLuminance(color: Color): Float {
-        return 0.299f * color.red + 0.587f * color.green + 0.114f * color.blue
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            color.luminance()
+        } else {
+            0.299f * color.red + 0.587f * color.green + 0.114f * color.blue
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
