@@ -1,7 +1,7 @@
 # Amberoid
 
 <p align="center">
-  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" height="128">
+  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.webp" height="128">
 </p>
 
 **Amberoid** — это супер-минималистичный музыкальный плеер для Android, вдохновлённый эстетикой и простотой десктопного плеера Amberol.
