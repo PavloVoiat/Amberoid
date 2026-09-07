@@ -9,8 +9,8 @@
 Он создан для тех, кто просто хочет слушать музыку, не отвлекаясь на сложные настройки, выравниватели громкости или создание бесконечных плейлистов.
 
 <p align="center">
-  <img src="screenshots/playlist_view.png" width="30%" alt="Скриншот плейлиста">
-  <img src="screenshots/player_view.png" width="30%" alt="Скриншот плеера">
+  <img src="screenshots/playlist_view.jpg" width="30%" alt="Скриншот плейлиста">
+  <img src="screenshots/player_view.jpg" width="30%" alt="Скриншот плеера">
 </p>
 
 ## ✨ Особенности
