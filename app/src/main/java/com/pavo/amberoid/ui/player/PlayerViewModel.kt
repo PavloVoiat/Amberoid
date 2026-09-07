@@ -20,6 +20,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import androidx.palette.graphics.Palette
 import com.google.common.util.concurrent.MoreExecutors
+import com.pavo.amberoid.data.local.PlaybackPreferences
 import com.pavo.amberoid.data.model.Song
 import com.pavo.amberoid.data.repository.AudioRepository
 import com.pavo.amberoid.service.PlaybackService
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -41,13 +43,16 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private val appContext = application
 
     private val repository = AudioRepository(appContext)
+    private val prefs = PlaybackPreferences(appContext)
 
     private var mediaController: MediaController? = null
 
+    private var originalSongs = emptyList<Song>()
     private val _songs = MutableStateFlow<List<Song>>(emptyList())
     val songs: StateFlow<List<Song>> = _songs.asStateFlow()
 
     private val artworkCache = mutableMapOf<Uri, ByteArray?>()
+    private var isStateRestored = false
 
     private val _mediaController = MutableStateFlow<MediaController?>(null)
     private val mediaControllerFlow: StateFlow<MediaController?> = _mediaController.asStateFlow()
@@ -129,7 +134,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     val songList = _songs.value
 
                     if (newIndex in songList.indices) {
-                        _currentSong.value = songList[newIndex]
+                        val newSong = songList[newIndex]
+                        _currentSong.value = newSong
+                        prefs.saveLastPosition(newSong.id, 0L)
                     }
                 }
             })
@@ -149,19 +156,37 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             combine(songs, mediaControllerFlow) { songList, controller ->
                 songList to controller
-            }.collect { (songList, controller) ->
+            }.collectLatest { (songList, controller) ->
                 if (songList.isNotEmpty() && controller != null) {
                     syncControllerWithSongs(controller, songList)
+                    if (!isStateRestored) {
+                        restorePlaybackState(controller, songList)
+                    }
                     updateStateFromController(controller)
                 }
             }
         }
     }
 
+    private fun restorePlaybackState(controller: MediaController, songs: List<Song>) {
+        val lastSongId = prefs.getLastSongId()
+        val lastPosition = prefs.getLastPosition()
+
+        if (lastSongId != -1L) {
+            val index = songs.indexOfFirst { it.id == lastSongId }
+            if (index != -1) {
+                controller.seekTo(index, lastPosition)
+                _currentSong.value = songs[index]
+                _currentPosition.value = lastPosition
+                controller.prepare()
+            }
+        }
+        isStateRestored = true
+    }
+
     private fun updateStateFromController(controller: MediaController) {
         _isPlaying.value = controller.isPlaying
         _duration.value = controller.duration.coerceAtLeast(0L)
-        _isShuffleEnabled.value = controller.shuffleModeEnabled
         _repeatMode.value = controller.repeatMode
 
         val currentIndex = controller.currentMediaItemIndex
@@ -174,8 +199,14 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private fun startProgressUpdate() {
         viewModelScope.launch {
             while (mediaController?.isPlaying == true) {
-                _currentPosition.value = mediaController?.currentPosition?.coerceAtLeast(0L) ?: 0L
+                val pos = mediaController?.currentPosition?.coerceAtLeast(0L) ?: 0L
+                _currentPosition.value = pos
                 _duration.value = mediaController?.duration?.coerceAtLeast(0L) ?: 0L
+
+                _currentSong.value?.let { song ->
+                    prefs.saveLastPosition(song.id, pos)
+                }
+
                 delay(500.milliseconds)
             }
         }
@@ -189,22 +220,20 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     fun loadSongs() {
         viewModelScope.launch(Dispatchers.IO) {
             val loadedSongs = repository.getAudioFiles()
+            originalSongs = loadedSongs
             _songs.value = loadedSongs
-            // observeInitialization will handle the sync once controller is available
         }
     }
 
     private fun syncControllerWithSongs(controller: MediaController, songs: List<Song>) {
         if (songs.isEmpty()) return
 
-        // If the controller has no items or the counts don't match, re-populate
         if (controller.mediaItemCount == 0 || controller.mediaItemCount != songs.size) {
             val mediaItems = songs.map { MediaItem.fromUri(it.contentUri) }
             controller.setMediaItems(mediaItems)
             controller.prepare()
         }
 
-        // Ensure current song is synced
         val currentIndex = controller.currentMediaItemIndex
         if (currentIndex in songs.indices) {
             _currentSong.value = songs[currentIndex]
@@ -253,8 +282,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     fun playPrevious() {
         mediaController?.let {
-            if (it.hasPreviousMediaItem()) {
+            if (it.currentPosition > 3000) {
+                it.seekTo(0L)
+            } else if (it.hasPreviousMediaItem()) {
                 it.seekToPreviousMediaItem()
+            } else {
+                // If at the start, go to the last song
+                it.seekTo(it.mediaItemCount - 1, 0L)
             }
         }
     }
@@ -268,10 +302,38 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun toggleShuffle() {
-        mediaController?.let {
-            val newState = !it.shuffleModeEnabled
-            it.shuffleModeEnabled = newState
+        mediaController?.let { controller ->
+            val newState = !isShuffleEnabled.value
             _isShuffleEnabled.value = newState
+
+            val current = _currentSong.value
+            val currentPos = _currentPosition.value
+
+            if (newState) {
+                // Shuffle the entire list but don't force current to index 0
+                // so that "Previous" still works
+                _songs.value = originalSongs.shuffled()
+            } else {
+                _songs.value = originalSongs
+            }
+
+            val mediaItems = _songs.value.map { MediaItem.fromUri(it.contentUri) }
+            val newIndex = _songs.value.indexOfFirst { it.id == current?.id }
+            
+            if (newIndex != -1) {
+                // Use false for resetPosition to avoid the "freeze" if possible,
+                // but setMediaItems(list, index, pos) is the precise way.
+                controller.setMediaItems(mediaItems, newIndex, currentPos)
+            } else {
+                controller.setMediaItems(mediaItems)
+            }
+            
+            controller.shuffleModeEnabled = false 
+            // Only prepare if the player was in an idle or ended state
+            if (controller.playbackState == Player.STATE_IDLE || controller.playbackState == Player.STATE_ENDED) {
+                controller.prepare()
+            }
+            if (_isPlaying.value) controller.play()
         }
     }
 
