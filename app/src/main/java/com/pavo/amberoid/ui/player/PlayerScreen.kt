@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -285,63 +286,68 @@ fun AmberoidUI(
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 32.dp, vertical = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                        .padding(horizontal = 48.dp, vertical = 24.dp),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(modifier = Modifier.weight(1f).aspectRatio(1f), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.weight(0.8f).aspectRatio(1f), contentAlignment = Alignment.Center) {
                         TrackImage(
                             artworkBytes = artworkBytes,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(32.dp))
+                    Spacer(modifier = Modifier.width(64.dp))
 
                     Column(
-                        modifier = Modifier.weight(1.5f),
+                        modifier = Modifier.weight(1.2f).scale(0.9f),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        TrackTitle(
-                            title = currentSong?.title ?: "No Track",
-                            color = contentColor
-                        )
-
-                        ArtistName(
-                            artist = currentSong?.artist ?: "Unknown Artist",
-                            color = contentColor.copy(alpha = 0.8f)
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        WaveformSeekBar(
-                            progressFraction = progressFraction,
-                            songId = currentSong?.id ?: 0L,
-                            onSeek = { fraction ->
-                                val targetMs = (fraction * duration).toLong()
-                                viewModel.seekTo(targetMs)
-                            },
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                            activeColor = contentColor,
-                            inactiveColor = contentColor.copy(alpha = 0.3f)
-                        )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            PlayedTrackTime(positionMs = currentPosition, color = contentColor)
-                            TrackLength(
-                                positionMs = currentPosition,
-                                durationMs = duration,
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            TrackTitle(
+                                title = currentSong?.title ?: "No Track",
                                 color = contentColor
                             )
+                            ArtistName(
+                                artist = currentSong?.artist ?: "Unknown Artist",
+                                color = contentColor.copy(alpha = 0.7f)
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            WaveformSeekBar(
+                                progressFraction = progressFraction,
+                                songId = currentSong?.id ?: 0L,
+                                onSeek = { fraction ->
+                                    val targetMs = (fraction * duration).toLong()
+                                    viewModel.seekTo(targetMs)
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                activeColor = contentColor,
+                                inactiveColor = contentColor.copy(alpha = 0.2f)
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                PlayedTrackTime(positionMs = currentPosition, color = contentColor)
+                                TrackLength(
+                                    positionMs = currentPosition,
+                                    durationMs = duration,
+                                    color = contentColor
+                                )
+                            }
                         }
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround,
+                            horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             SkipPrevious(

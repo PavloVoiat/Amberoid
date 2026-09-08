@@ -192,7 +192,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
         val currentIndex = controller.currentMediaItemIndex
         val currentList = _songs.value
-        if (currentIndex in currentList.indices) {
+        
+        if (currentList.isNotEmpty() && currentIndex in currentList.indices) {
             _currentSong.value = currentList[currentIndex]
         }
     }
@@ -219,6 +220,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun loadSongs() {
+        if (_songs.value.isNotEmpty()) return
+
         viewModelScope.launch(Dispatchers.IO) {
             val loadedSongs = repository.getAudioFiles()
             originalSongs = loadedSongs
