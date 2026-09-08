@@ -34,12 +34,12 @@
 
 Последняя версия:
 
-[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/PavloVoiat/Amberoid/releases/download/v1.0/app-release.apk)
+[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/PavloVoiat/Amberoid/releases/download/v1.0.0/amberoid.apk)
 
 Если вы хотите скачать другие версии:
 
 1. Перейдите в раздел [Releases](https://github.com/PavloVoiat/Amberoid/releases/).
-2. Скачайте файл **`app-release.apk`** (или `amberoid.apk`).
+2. Скачайте файл **`amberoid.apk`** (или `app-release.apk`).
 3. Установите его на устройство и пользуйтесь!
 
 ## 🛠 Сборка из исходников
