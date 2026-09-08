@@ -104,6 +104,7 @@ fun AmberoidUI(
             PlaylistDrawer(
                 primaryColor = colorScheme.accent.copy(0.5f),
                 secondaryColor = colorScheme.surface.copy(0.9f),
+                textColor = contentColor,
                 songs = songs,
                 currentSong = currentSong,
                 onSongClick = { song ->
@@ -117,7 +118,6 @@ fun AmberoidUI(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Highly blurred background artwork
             if (artworkBytes != null) {
                 AsyncImage(
                     model = artworkBytes,
@@ -129,7 +129,6 @@ fun AmberoidUI(
                 )
             }
 
-            // Darkening scrim and gradient for depth and legibility
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -146,7 +145,6 @@ fun AmberoidUI(
             )
 
             if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) {
-                // Portrait Layout
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -284,7 +282,6 @@ fun AmberoidUI(
                     }
                 }
             } else {
-                // Landscape / Large Screen Layout
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
@@ -292,7 +289,6 @@ fun AmberoidUI(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Left Column: Artwork (Scale to fit)
                     Box(modifier = Modifier.weight(1f).aspectRatio(1f), contentAlignment = Alignment.Center) {
                         TrackImage(
                             artworkBytes = artworkBytes,
@@ -302,7 +298,6 @@ fun AmberoidUI(
 
                     Spacer(modifier = Modifier.width(32.dp))
 
-                    // Right Column: Info and Controls
                     Column(
                         modifier = Modifier.weight(1.5f),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -344,7 +339,6 @@ fun AmberoidUI(
                             )
                         }
 
-                        // Compact Controls Row
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround,
@@ -370,7 +364,6 @@ fun AmberoidUI(
                             )
                         }
 
-                        // Compact Volume & Utility Row
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly,

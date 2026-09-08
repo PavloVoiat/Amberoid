@@ -48,6 +48,7 @@ fun PlaylistDrawer(
     onSongClick: (Song) -> Unit,
     primaryColor: Color,
     secondaryColor: Color,
+    textColor: Color,
     viewModel: PlayerViewModel = viewModel()
 ) {
     ModalDrawerSheet(
@@ -67,7 +68,7 @@ fun PlaylistDrawer(
 
                 fontSize = 5.em,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = textColor,
 
                 text = "Playlist"
             )
@@ -82,6 +83,7 @@ fun PlaylistDrawer(
                         isSelected = isSelected,
                         onClick = { onSongClick(song) },
                         primaryColor = primaryColor,
+                        textColor = textColor,
                         viewModel = viewModel
                     )
                 }
@@ -96,6 +98,7 @@ private fun PlaylistItem(
     isSelected: Boolean,
     onClick: () -> Unit,
     primaryColor: Color,
+    textColor: Color,
     viewModel: PlayerViewModel
 ) {
     val context = LocalContext.current
@@ -110,12 +113,6 @@ private fun PlaylistItem(
         primaryColor
     } else {
         Color.Transparent
-    }
-
-    val textColor = if (isSelected) {
-        Color.White
-    } else {
-        Color.White.copy(0.7f)
     }
 
     Row(
