@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class PlaybackService : MediaSessionService() {
     private var mediaSession: MediaSession? = null
@@ -67,7 +68,7 @@ class PlaybackService : MediaSessionService() {
         progressLogJob = serviceScope.launch {
             while (true) {
                 saveCurrentPosition()
-                delay(1000)
+                delay(1000.milliseconds)
             }
         }
     }

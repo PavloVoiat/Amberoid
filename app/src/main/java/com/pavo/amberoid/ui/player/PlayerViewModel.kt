@@ -287,7 +287,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             val currentPos = _currentPosition.value
 
             if (newState) {
-                _songs.value = originalSongs.shuffled()
+                val shuffledList = originalSongs.filter { it.id != current?.id }.shuffled()
+                _songs.value = if (current != null) listOf(current) + shuffledList else shuffledList
             } else {
                 _songs.value = originalSongs
             }
