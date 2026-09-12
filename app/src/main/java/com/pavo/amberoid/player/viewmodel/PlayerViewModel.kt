@@ -12,7 +12,9 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.pavo.amberoid.data.local.PlaybackPreferences
+import com.pavo.amberoid.data.model.CoverPalette
 import com.pavo.amberoid.data.model.Song
+import com.pavo.amberoid.data.model.SortOrder
 import com.pavo.amberoid.data.repository.AudioRepository
 import com.pavo.amberoid.service.PlaybackService
 import kotlinx.coroutines.Dispatchers
@@ -70,6 +72,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _repeatMode = MutableStateFlow(Player.REPEAT_MODE_OFF)
     val repeatMode: StateFlow<Int> = _repeatMode.asStateFlow()
+
+    private var currentSortOrder: SortOrder = SortOrder.DATE_DESC
 
     private val playerListener = object : Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -304,7 +308,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 val shuffledList = originalSongs.filter { it.id != current?.id }.shuffled()
                 _songs.value = if (current != null) listOf(current) + shuffledList else shuffledList
             } else {
-                _songs.value = originalSongs
+                _songs.value = applySort(originalSongs, currentSortOrder)
             }
 
             val mediaItems = _songs.value.map {
@@ -419,6 +423,52 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             }
             _sleepTimerText.value = "Off"
             mediaController?.pause()
+        }
+    }
+
+    fun updateSortOrder(newOrder: SortOrder) {
+        currentSortOrder = newOrder
+
+        val currentSongObj = _currentSong.value
+        val currentPos = _currentPosition.value
+
+        val sortedList = applySort(originalSongs, newOrder)
+
+        _songs.value = sortedList
+
+        mediaController?.let { controller ->
+            val mediaItems = sortedList.map { song ->
+                MediaItem.Builder()
+                    .setMediaId(song.id.toString())
+                    .setUri(song.contentUri)
+                    .build()
+            }
+
+            val newIndex = sortedList.indexOfFirst { it.id == currentSongObj?.id }
+
+            if (newIndex != -1) {
+                controller.setMediaItems(mediaItems, newIndex, currentPos)
+            } else {
+                controller.setMediaItems(mediaItems)
+            }
+
+            if (controller.playbackState == Player.STATE_IDLE || controller.playbackState == Player.STATE_ENDED) {
+                controller.prepare()
+            }
+            if (_isPlaying.value) controller.play()
+        }
+    }
+
+    private fun applySort(list: List<Song>, order: SortOrder): List<Song> {
+        return when (order) {
+            SortOrder.TITLE_ASC -> originalSongs.sortedBy { it.title.lowercase() }
+            SortOrder.TITLE_DESC -> originalSongs.sortedByDescending { it.title.lowercase() }
+            SortOrder.ARTIST_ASC -> originalSongs.sortedBy { it.artist.lowercase() }
+            SortOrder.ARTIST_DESC -> originalSongs.sortedByDescending { it.artist.lowercase() }
+            SortOrder.DURATION_ASC -> originalSongs.sortedBy { it.duration }
+            SortOrder.DURATION_DESC -> originalSongs.sortedByDescending { it.duration }
+            SortOrder.DATE_ASC -> originalSongs.sortedBy { it.dateAdded }
+            SortOrder.DATE_DESC -> originalSongs.sortedByDescending { it.dateAdded }
         }
     }
 }

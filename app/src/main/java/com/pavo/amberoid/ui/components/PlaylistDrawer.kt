@@ -17,11 +17,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.pavo.amberoid.NerdFont
 import com.pavo.amberoid.data.model.Song
+import com.pavo.amberoid.data.model.SortOrder
 import com.pavo.amberoid.player.viewmodel.PlayerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -49,8 +57,12 @@ fun PlaylistDrawer(
     primaryColor: Color,
     secondaryColor: Color,
     textColor: Color,
-    viewModel: PlayerViewModel = viewModel()
+    viewModel: PlayerViewModel = viewModel(),
+    currentSort: SortOrder,
+    onSortSelected: (SortOrder) -> Unit
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     ModalDrawerSheet(
         modifier = Modifier
             .width(320.dp),
@@ -62,16 +74,49 @@ fun PlaylistDrawer(
                 .fillMaxHeight()
                 .padding(16.dp)
         ) {
-            Text(
+            Row(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(start = 8.dp, bottom = 16.dp, top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    fontSize = 5.em,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor,
 
-                fontSize = 5.em,
-                fontWeight = FontWeight.Bold,
-                color = textColor,
+                    text = "Playlist"
+                )
 
-                text = "Playlist"
-            )
+                Box {
+                    IconButton(onClick = { expanded = true }) {
+                        Text(
+                            text = "\uf0dc",
+
+                            fontSize = 20.sp,
+                            fontFamily = NerdFont,
+                            color = textColor
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        SortOrder.values().forEach { order ->
+                            DropdownMenuItem(
+                                text = { Text(order.label) },
+                                onClick = {
+                                    onSortSelected(order)
+                                    viewModel.updateSortOrder(order)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(4.dp)

@@ -46,6 +46,7 @@ import com.pavo.amberoid.ui.components.FunctionsBottomSheet
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.pavo.amberoid.data.model.SortOrder
 import com.pavo.amberoid.ui.components.ShufflePlaylistButton
 import com.pavo.amberoid.ui.components.SkipNext
 import com.pavo.amberoid.ui.components.SkipPrevious
@@ -88,6 +89,8 @@ fun AmberoidUI(
     val repeatMode by viewModel.repeatMode.collectAsStateWithLifecycle()
     val songs by viewModel.songs.collectAsStateWithLifecycle()
 
+    var currentSort by remember { mutableStateOf(SortOrder.DATE_DESC) }
+
     val animatedTopColor by animateColorAsState(
         targetValue = topColor,
         animationSpec = tween(800),
@@ -118,6 +121,11 @@ fun AmberoidUI(
                     viewModel.selectSong(song)
                     viewModel.play()
                     scope.launch { drawerState.close() }
+                },
+                currentSort = currentSort,
+                onSortSelected = {newSort ->
+                    currentSort = newSort
+                    viewModel.updateSortOrder(newSort)
                 }
             )
         }
