@@ -120,6 +120,11 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     _isPlaying.value = isPlaying
                     if (isPlaying) {
                         startProgressUpdate()
+                    } else {
+                        val currentId = currentSong.value?.id
+                        if (currentId != null) {
+                            prefs.saveLastPosition(currentId, controller.currentPosition)
+                        }
                     }
                 }
 
