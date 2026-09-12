@@ -5,5 +5,7 @@
 - Added **Playlist Sorting**
 - Some Fixes
 
+---
+
 ## v1.0.0
 - First release
