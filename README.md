@@ -34,7 +34,7 @@
 
 Последняя версия:
 
-[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/PavloVoiat/Amberoid/releases/download/v1.0.0/amberoid.apk)
+[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/PavloVoiat/Amberoid/releases/download/v1.1.0/amberoid.apk)
 
 Если вы хотите скачать другие версии:
 
