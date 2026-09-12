@@ -65,7 +65,9 @@ class PlaybackService : MediaSessionService() {
         player = exoPlayer
         exoPlayer.addListener(playerListener)
         
-        val intent = android.content.Intent(this, com.pavo.amberoid.MainActivity::class.java)
+        val intent = android.content.Intent(this, com.pavo.amberoid.MainActivity::class.java).apply {
+            flags = android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
         val pendingIntent = android.app.PendingIntent.getActivity(
             this,
             0,
