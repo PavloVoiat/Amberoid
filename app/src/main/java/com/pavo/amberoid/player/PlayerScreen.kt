@@ -41,7 +41,11 @@ import com.pavo.amberoid.ui.components.PlayedTrackTime
 import com.pavo.amberoid.ui.components.PlaylistButton
 import com.pavo.amberoid.ui.components.PlaylistDrawer
 import com.pavo.amberoid.ui.components.RepeatPlaylistButton
-import com.pavo.amberoid.ui.components.SettingsButton
+import com.pavo.amberoid.ui.components.FunctionsMenuButton
+import com.pavo.amberoid.ui.components.FunctionsBottomSheet
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.pavo.amberoid.ui.components.ShufflePlaylistButton
 import com.pavo.amberoid.ui.components.SkipNext
 import com.pavo.amberoid.ui.components.SkipPrevious
@@ -99,6 +103,7 @@ fun AmberoidUI(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var showFunctionsSheet by remember { mutableStateOf(false) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -277,8 +282,9 @@ fun AmberoidUI(
                             iconColor = secondaryIconColor
                         )
 
-                        SettingsButton(
+                        FunctionsMenuButton(
                             color = secondaryButtonColor,
+                            onClick = { showFunctionsSheet = true },
                             iconColor = secondaryIconColor
                         )
                     }
@@ -420,13 +426,23 @@ fun AmberoidUI(
                                 iconColor = secondaryIconColor
                             )
 
-                            SettingsButton(
+                            FunctionsMenuButton(
                                 color = secondaryButtonColor,
+                                onClick = { showFunctionsSheet = true },
                                 iconColor = secondaryIconColor
                             )
                         }
                     }
                 }
+            }
+            if (showFunctionsSheet) {
+                FunctionsBottomSheet(
+                    onDismissRequest = { showFunctionsSheet = false },
+                    primaryColor = colorScheme.primary,
+                    secondaryColor = colorScheme.surface,
+                    textColor = contentColor,
+                    viewModel = viewModel
+                )
             }
         }
     }

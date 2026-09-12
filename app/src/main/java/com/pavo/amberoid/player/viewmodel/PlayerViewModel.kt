@@ -395,4 +395,30 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     fun decreaseVolume(step: Float = 0.1f) {
         volumeManager.decreaseVolume(step)
     }
+
+    private val _sleepTimerText = MutableStateFlow<String>("Off")
+    val sleepTimerText: StateFlow<String> = _sleepTimerText.asStateFlow()
+
+    private var sleepTimerJob: Job? = null
+
+    fun setSleepTimer(minutes: Int) {
+        sleepTimerJob?.cancel()
+        if (minutes <= 0) {
+            _sleepTimerText.value = "Off"
+            return
+        }
+
+        sleepTimerJob = viewModelScope.launch {
+            var totalSeconds = minutes * 60
+            while (totalSeconds > 0) {
+                val mins = totalSeconds / 60
+                val secs = totalSeconds % 60
+                _sleepTimerText.value = String.format(java.util.Locale.US, "%02d:%02d", mins, secs)
+                delay(1000.milliseconds)
+                totalSeconds--
+            }
+            _sleepTimerText.value = "Off"
+            mediaController?.pause()
+        }
+    }
 }

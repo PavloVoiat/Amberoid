@@ -93,7 +93,7 @@ fun RepeatPlaylistButton(
 }
 
 @Composable
-fun SettingsButton(color: Color, iconColor: Color = Color.White) {
+fun FunctionsMenuButton(color: Color, onClick: () -> Unit, iconColor: Color = Color.White) {
     IconButton(
         modifier = Modifier
             .size(48.dp)
@@ -101,10 +101,10 @@ fun SettingsButton(color: Color, iconColor: Color = Color.White) {
                 color = color,
                 shape = RoundedCornerShape(50)
             ),
-        onClick = {}
+        onClick = onClick
     ) {
         Text(
-            text = "\uEB51",
+            text = "\uDB80\uDDD9",
 
             color = iconColor,
             fontFamily = NerdFont
