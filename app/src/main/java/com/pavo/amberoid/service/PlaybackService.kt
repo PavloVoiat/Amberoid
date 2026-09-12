@@ -43,10 +43,15 @@ class PlaybackService : MediaSessionService() {
         }
     }
 
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun onCreate() {
         super.onCreate()
         prefs = PlaybackPreferences(applicationContext)
         createNotificationChannel()
+        
+        val notificationProvider = androidx.media3.session.DefaultMediaNotificationProvider(this)
+        notificationProvider.setSmallIcon(com.pavo.amberoid.R.mipmap.ic_launcher)
+        setMediaNotificationProvider(notificationProvider)
 
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(C.USAGE_MEDIA)
@@ -60,7 +65,17 @@ class PlaybackService : MediaSessionService() {
         player = exoPlayer
         exoPlayer.addListener(playerListener)
         
-        mediaSession = MediaSession.Builder(this, exoPlayer).build()
+        val intent = android.content.Intent(this, com.pavo.amberoid.MainActivity::class.java)
+        val pendingIntent = android.app.PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        
+        mediaSession = MediaSession.Builder(this, exoPlayer)
+            .setSessionActivity(pendingIntent)
+            .build()
     }
 
     private fun startProgressTracking() {
