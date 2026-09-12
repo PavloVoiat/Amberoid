@@ -89,7 +89,7 @@ fun AmberoidUI(
     val repeatMode by viewModel.repeatMode.collectAsStateWithLifecycle()
     val songs by viewModel.songs.collectAsStateWithLifecycle()
 
-    var currentSort by remember { mutableStateOf(SortOrder.DATE_DESC) }
+    var currentSort by remember { mutableStateOf(viewModel.getSavedSortOrder()) }
 
     val animatedTopColor by animateColorAsState(
         targetValue = topColor,

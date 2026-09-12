@@ -73,7 +73,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private val _repeatMode = MutableStateFlow(Player.REPEAT_MODE_OFF)
     val repeatMode: StateFlow<Int> = _repeatMode.asStateFlow()
 
-    private var currentSortOrder: SortOrder = SortOrder.DATE_DESC
+    private var currentSortOrder: SortOrder = prefs.getSortOrder()
 
     private val playerListener = object : Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -214,7 +214,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch(Dispatchers.IO) {
             val loadedSongs = repository.getAudioFiles()
             originalSongs = loadedSongs
-            _songs.value = loadedSongs
+            _songs.value = applySort(loadedSongs, currentSortOrder)
         }
     }
 
@@ -400,7 +400,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         volumeManager.decreaseVolume(step)
     }
 
-    private val _sleepTimerText = MutableStateFlow<String>("Off")
+    private val _sleepTimerText = MutableStateFlow("Off")
     val sleepTimerText: StateFlow<String> = _sleepTimerText.asStateFlow()
 
     private var sleepTimerJob: Job? = null
@@ -428,6 +428,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     fun updateSortOrder(newOrder: SortOrder) {
         currentSortOrder = newOrder
+        prefs.saveSortOrder(newOrder)
 
         val currentSongObj = _currentSong.value
         val currentPos = _currentPosition.value
@@ -471,4 +472,6 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             SortOrder.DATE_DESC -> originalSongs.sortedByDescending { it.dateAdded }
         }
     }
+
+    fun getSavedSortOrder() = prefs.getSortOrder()
 }

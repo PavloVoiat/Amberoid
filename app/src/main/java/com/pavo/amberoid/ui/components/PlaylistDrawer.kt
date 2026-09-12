@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
@@ -104,7 +103,7 @@ fun PlaylistDrawer(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        SortOrder.values().forEach { order ->
+                        SortOrder.entries.forEach { order ->
                             DropdownMenuItem(
                                 text = { Text(order.label) },
                                 onClick = {
