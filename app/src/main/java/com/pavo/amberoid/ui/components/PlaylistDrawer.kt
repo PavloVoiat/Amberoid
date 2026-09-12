@@ -37,7 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.pavo.amberoid.NerdFont
 import com.pavo.amberoid.data.model.Song
-import com.pavo.amberoid.ui.player.PlayerViewModel
+import com.pavo.amberoid.player.viewmodel.PlayerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
